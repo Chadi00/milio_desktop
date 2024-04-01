@@ -88,7 +88,7 @@ body, html {
 }
 
 .send-icon, .send-icon.loading {
-  margin-left: 10px;
+  margin-right: 10px;
   cursor: pointer;
   color: #4a90e2; /* Icon color */
   font-size: 24px;
