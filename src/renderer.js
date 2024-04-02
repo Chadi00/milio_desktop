@@ -23,8 +23,8 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // Create the send icon
     const sendIcon = document.createElement('i');
-    sendIcon.className = 'send-icon';
-    sendIcon.innerHTML = '&#x1F815;'; // Placeholder for an up-arrow icon
+    sendIcon.className = 'fas fa-arrow-up send-icon';
+    sendIcon.innerHTML = ''; 
 
     // Add event listener for the Enter key on userInput
     userInput.addEventListener('keydown', function(event) {
@@ -36,7 +36,6 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     });
 
-    // Repurpose the sendButton click event for the sendIcon
     sendIcon.addEventListener('click', () => {
         if (!sendIcon.classList.contains('loading')) {
             sendMessage();
@@ -66,8 +65,10 @@ const sendMessage = async () => {
 
     // Indicate loading state
     sendIcon.classList.add('loading');
-    // Optionally change the icon to a loading indicator
-    sendIcon.innerHTML = '&#8635;'; // Change this to your loading icon
+    
+    sendIcon.classList.remove('fas', 'fa-arrow-up'); // Remove the original send icon classes
+    sendIcon.classList.add('fas', 'fa-circle-notch'); // Add the loading icon classes
+    sendIcon.classList.add('fa-spin'); // Add spinning animation
 
     // Display user message immediately and clear input
     displayMessage(userInput, true);
@@ -87,17 +88,16 @@ const sendMessage = async () => {
         }
 
         const data = await response.json();
-        // Use the new function for analyzing and displaying the message
         analyzeAndDisplayChatbotMessage(data['System message']);
     } catch (error) {
         console.error('Error:', error);
     } finally {
         // End loading state and allow sending messages again
-        sendIcon.classList.remove('loading');
-        // Revert icon back to the send symbol
-        sendIcon.innerHTML = '&#x1F815;'; // Your send icon
+        sendIcon.classList.remove('loading', 'fa-spin', 'fa-circle-notch');
+        sendIcon.classList.add('fas', 'fa-arrow-up'); // Revert icon back to the send symbol
     }
 };
+
 
 const displayMessage = (message, isUserMessage) => {
     const chatMessages = document.getElementById('chat-messages');
@@ -108,7 +108,7 @@ const displayMessage = (message, isUserMessage) => {
     if (!isUserMessage) {
         // Use the Markdown to HTML converter for chatbot messages
         message = markdownToHtml(message);
-        messageBubble.innerHTML = message; // Use innerHTML carefully; ensure content is sanitized
+        messageBubble.innerHTML = message; 
     } else {
         messageBubble.textContent = message; // Use textContent for user messages to avoid XSS
     }
@@ -134,7 +134,7 @@ const analyzeAndDisplayChatbotMessage = (message) => {
     // Get the first character of the message
     const actionCode = message.charAt(0);
 
-    // Use a switch case to handle different action codes
+    
     switch (actionCode) {
         case '0':
             console.log('Action 0: ', message);

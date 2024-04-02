@@ -89,7 +89,6 @@ body, html {
 
 .send-icon, .send-icon.loading {
   margin-right: 10px;
-  cursor: pointer;
   color: #4a90e2; 
   font-size: 24px;
 }
@@ -109,17 +108,4 @@ body, html {
 
 #chat-messages::-webkit-scrollbar-thumb:hover {
   background: #555;
-}
-
-.send-icon.loading {
-  animation: rotate 1s linear infinite;
-}
-
-@keyframes rotate {
-  from {
-    transform: rotate(0deg);
-  }
-  to {
-    transform: rotate(360deg);
-  }
 }
