@@ -1,2 +1,7 @@
-// See the Electron documentation for details on how to use preload scripts:
-// https://www.electronjs.org/docs/latest/tutorial/process-model#preload-scripts
+// preload.js
+const { contextBridge, ipcRenderer } = require('electron');
+const softwareScript = require('./action_scripts/software');
+
+contextBridge.exposeInMainWorld('electronAPI', {
+    softwareScript: softwareScript // Expose softwareScript function to the renderer
+});

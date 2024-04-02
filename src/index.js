@@ -9,10 +9,13 @@ const createWindow = () => {
     webPreferences: {
       preload: path.join(__dirname,'preload.js'),
       contextIsolation: true,
+      nodeIntegration: true,
     },
   });
 
   mainWindow.loadFile(path.join(__dirname, 'index.html'));
+
+  mainWindow.webContents.openDevTools();
 };
 
 app.whenReady().then(createWindow);

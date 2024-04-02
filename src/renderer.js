@@ -55,6 +55,9 @@ document.addEventListener('DOMContentLoaded', () => {
     appDiv.appendChild(chatContainer);
 });
 
+
+
+
 const sendMessage = async () => {
     const userInputField = document.getElementById('user-input');
     const sendIcon = document.querySelector('.send-icon');
@@ -99,6 +102,8 @@ const sendMessage = async () => {
 };
 
 
+
+
 const displayMessage = (message, isUserMessage) => {
     const chatMessages = document.getElementById('chat-messages');
     const messageContainer = document.createElement('div');
@@ -129,6 +134,8 @@ const displayMessage = (message, isUserMessage) => {
 };
 
 
+
+
 // This function analyzes the chatbot message based on the first character
 const analyzeAndDisplayChatbotMessage = (message) => {
     // Get the first character of the message
@@ -137,31 +144,48 @@ const analyzeAndDisplayChatbotMessage = (message) => {
     
     switch (actionCode) {
         case '0':
-            console.log('Action 0: ', message);
+            console.log('Action 0: software');
+            let res = window.electronAPI.softwareScript(message.substring(1));
+            if (res === '-'){
+                console.log(res);
+                let output = 'Opening ' + message.substring(3) + '...';
+                displayMessage(output, false);
+                break;
+            }
+            console.log(res);
+            displayMessage(res, false);
             break;
         case '1':
             console.log('Action 1: ', message);
+            displayMessage(message.substring(3), false);
             break;
         case '2':
             console.log('Action 2: ', message);
+            displayMessage(message.substring(1), false);
             break;
         case '3':
             console.log('Action 3: ', message);
+            displayMessage(message.substring(1), false);
             break;
         case '4':
             console.log('Action 4: ', message);
+            displayMessage(message.substring(1), false);
             break;
         case '5':
             console.log('Action 5: ', message);
+            displayMessage(message.substring(1), false);
             break;
         case '6':
             console.log('Action 6: ', message);
+            displayMessage(message.substring(1), false);
             break;
         case '7':
             console.log('Action 7: ', message);
+            displayMessage(message.substring(1), false);
             break;
         case '8':
             console.log('Action 8: ', message);
+            displayMessage(message.substring(1), false);
             break;
     }
 
@@ -175,12 +199,18 @@ const analyzeAndDisplayChatbotMessage = (message) => {
         displayMessage("Can't receive response from llm api", false);
         return
     }
-
-    // After analyzing, display the message normally or based on specific handling
-    displayMessage(message.substring(1), false); // Remove the action code before displaying
 };
 
+
+
+
 const markdownToHtml = (markdownText) => {
+    // Ensure markdownText is a string to avoid errors
+    if (typeof markdownText !== 'string') {
+        console.error('Invalid input: markdownText must be a string.');
+        return ''; // Return an empty string or some error message
+    }
+
     // Convert headers
     markdownText = markdownText.replace(/(######\s(.*))/g, '<h6>$2</h6>')
                                .replace(/(#####\s(.*))/g, '<h5>$2</h5>')
@@ -216,5 +246,4 @@ const markdownToHtml = (markdownText) => {
 
     return markdownText;
 };
-
 
