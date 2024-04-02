@@ -87,8 +87,8 @@ const sendMessage = async () => {
         }
 
         const data = await response.json();
-        // Display chatbot message once received
-        displayMessage(data['System message'], false);
+        // Use the new function for analyzing and displaying the message
+        analyzeAndDisplayChatbotMessage(data['System message']);
     } catch (error) {
         console.error('Error:', error);
     } finally {
@@ -105,7 +105,13 @@ const displayMessage = (message, isUserMessage) => {
     messageContainer.classList.add('message-container');
 
     const messageBubble = document.createElement('div');
-    messageBubble.textContent = message;
+    if (!isUserMessage) {
+        // Use the Markdown to HTML converter for chatbot messages
+        message = markdownToHtml(message);
+        messageBubble.innerHTML = message; // Use innerHTML carefully; ensure content is sanitized
+    } else {
+        messageBubble.textContent = message; // Use textContent for user messages to avoid XSS
+    }
     messageBubble.classList.add('message-bubble');
 
     if (isUserMessage) {
@@ -115,11 +121,100 @@ const displayMessage = (message, isUserMessage) => {
         messageContainer.classList.add('chatbot-message');
         messageBubble.classList.add('chatbot-bubble');
     }
-
     
     messageContainer.appendChild(messageBubble);
     chatMessages.appendChild(messageContainer);
 
     messageContainer.scrollIntoView({ behavior: 'smooth' });
 };
+
+
+// This function analyzes the chatbot message based on the first character
+const analyzeAndDisplayChatbotMessage = (message) => {
+    // Get the first character of the message
+    const actionCode = message.charAt(0);
+
+    // Use a switch case to handle different action codes
+    switch (actionCode) {
+        case '0':
+            console.log('Action 0: ', message);
+            break;
+        case '1':
+            console.log('Action 1: ', message);
+            break;
+        case '2':
+            console.log('Action 2: ', message);
+            break;
+        case '3':
+            console.log('Action 3: ', message);
+            break;
+        case '4':
+            console.log('Action 4: ', message);
+            break;
+        case '5':
+            console.log('Action 5: ', message);
+            break;
+        case '6':
+            console.log('Action 6: ', message);
+            break;
+        case '7':
+            console.log('Action 7: ', message);
+            break;
+        case '8':
+            console.log('Action 8: ', message);
+            break;
+    }
+
+    if (actionCode === 'A'){
+        console.log("Can't understand the request");
+        displayMessage("Can't understand the request", false);
+        return
+    }
+    if (actionCode === 'B'){
+        console.log("Can't understand the request");
+        displayMessage("Can't receive response from llm api", false);
+        return
+    }
+
+    // After analyzing, display the message normally or based on specific handling
+    displayMessage(message.substring(1), false); // Remove the action code before displaying
+};
+
+const markdownToHtml = (markdownText) => {
+    // Convert headers
+    markdownText = markdownText.replace(/(######\s(.*))/g, '<h6>$2</h6>')
+                               .replace(/(#####\s(.*))/g, '<h5>$2</h5>')
+                               .replace(/(####\s(.*))/g, '<h4>$2</h4>')
+                               .replace(/(###\s(.*))/g, '<h3>$2</h3>')
+                               .replace(/(##\s(.*))/g, '<h2>$2</h2>')
+                               .replace(/(#\s(.*))/g, '<h1>$2</h1>');
+
+    // Convert bold text
+    markdownText = markdownText.replace(/\*\*(.*?)\*\*/g, '<b>$1</b>');
+
+    // Convert italic text
+    markdownText = markdownText.replace(/\*(.*?)\*/g, '<i>$1</i>');
+
+    // Convert inline code
+    markdownText = markdownText.replace(/`(.*?)`/g, '<code>$1</code>');
+
+    // Convert blockquotes
+    markdownText = markdownText.replace(/^\s*>\s*(.*)/gm, '<blockquote>$1</blockquote>');
+
+    // Convert unordered lists (simple version, does not handle nested lists)
+    markdownText = markdownText.replace(/^\s*-\s*(.*)/gm, '<ul><li>$1</li></ul>');
+    markdownText = markdownText.replace(/<\/ul><ul>/g, '');
+
+    // Convert links
+    markdownText = markdownText.replace(/\[([^\]]+)\]\(([^)]+)\)/g, '<a href="$2">$1</a>');
+
+    // Convert code blocks
+    markdownText = markdownText.replace(/```([^`]+)```/g, '<pre><code>$1</code></pre>');
+
+    // Handle new lines
+    markdownText = markdownText.replace(/\n/g, '<br>');
+
+    return markdownText;
+};
+
 

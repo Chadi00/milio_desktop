@@ -4,8 +4,8 @@ body, html {
   padding: 0;
   overflow: hidden; 
   font-family: 'Arial', sans-serif;
-  background-color: #121212; /* Dark mode background color */
-  color: #e0e0e0; /* Light text color for contrast */
+  background-color: #121212; 
+  color: #e0e0e0; 
 }
 
 #chat-container {
@@ -13,7 +13,7 @@ body, html {
   flex-direction: column;
   width: 100vw; 
   height: 100vh; 
-  background-color: #1e1e1e; /* Slightly lighter dark shade for container */
+  background-color: #1e1e1e; 
   overflow: hidden; 
 }
 
@@ -21,7 +21,7 @@ body, html {
   text-align: center;
   width: 100%;
   margin: 10;
-  color: #ffffff; /* Ensure header text is visible in dark mode */
+  color: #ffffff; 
 }
 
 #chat-messages {
@@ -29,12 +29,12 @@ body, html {
   padding: 20px;
   overflow-y: auto; /* Allows for scrolling within this element */
   margin-bottom: 80px; /* Increased space for the new input design */
-  color: #e0e0e0; /* Light text color for readability */
+  color: #e0e0e0; 
 }
 
 .message-container {
   display: flex;
-  justify-content: flex-end; /* Align user messages to the right */
+  justify-content: flex-end;
   margin-bottom: 12px;
 }
 
@@ -47,21 +47,21 @@ body, html {
 
 /* Adjusting user message styles for a non-bubble look */
 .user-message .message-bubble {
-  background-color: transparent; /* No background */
-  color: #e0e0e0; /* Text color for readability */
-  padding: 0; /* No padding */
-  border: none; /* No border */
+  background-color: transparent; 
+  color: #e0e0e0; 
+  padding: 0; 
+  border: none; 
 }
 
 /* Style for chatbot messages to distinguish them */
 .chatbot-message {
-  justify-content: flex-start; /* Align chatbot messages to the left */
+  justify-content: flex-start;
 }
 
 .chatbot-message .message-bubble {
-  background-color: #333333; /* Darker shade for bubble */
-  color: #e0e0e0; /* Light text color */
-  border: 1px solid #444; /* Subtle border for bubble */
+  background-color: #333333; 
+  color: #e0e0e0; 
+  border: 1px solid #444; 
 }
 
 .input-container {
@@ -72,7 +72,7 @@ body, html {
   display: flex;
   align-items: center;
   padding: 10px;
-  background-color: #2a2a2a; /* Dark background for input area */
+  background-color: #2a2a2a; 
   border-radius: 20px;
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.5);
 }
@@ -83,14 +83,14 @@ body, html {
   padding: 10px 10px 10px 20px;
   margin: 0;
   background-color: transparent;
-  color: #e0e0e0; /* Light text color */
+  color: #e0e0e0; 
   outline: none;
 }
 
 .send-icon, .send-icon.loading {
   margin-right: 10px;
   cursor: pointer;
-  color: #4a90e2; /* Icon color */
+  color: #4a90e2; 
   font-size: 24px;
 }
 

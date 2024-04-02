@@ -5,9 +5,10 @@ const createWindow = () => {
   const mainWindow = new BrowserWindow({
     width: 700,
     height: 800,
-    resizable: false,
+    resizable: true,
     webPreferences: {
-      nodeIntegration: true,
+      preload: path.join(__dirname,'preload.js'),
+      contextIsolation: true,
     },
   });
 
