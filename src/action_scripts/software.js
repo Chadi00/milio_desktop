@@ -1,71 +1,76 @@
 const { exec } = require('child_process');
 
-function softwareScript(message) {
-
-    let res = '-';
-
+async function softwareScript(message) {
     if (message.length < 3) {
         console.log("Message too short.");
-        return;
+        return "Message too short.";
     }
 
-    // Extract the first two characters of the message
     const actionCode = message.substring(0, 2);
+    let res = '-';
 
-    // Use a switch statement to handle different action codes
     switch (actionCode) {
         case '01':
             console.log("Action 01: Open application.");
-            if (message.substring(2) === '0'){
-                res = 'Sorry I was not able to understand which application you want to open, can you try again please.';
-                break;
+            if (message.substring(2) === '0') {
+                res = 'Sorry, I was not able to understand which application you want to open. Make sure that the request is complete and that the application name is emphasized.';
+            } else {
+                try {
+                    const wasOpened = await openApplication(message.substring(2));
+                    res = wasOpened ? 'Opened ' + message.substring(2) : 'Failed to open the application. Ensure it is available on your computer.';
+                } catch (error) {
+                    console.error(`Error: ${error}`);
+                    res = 'Encountered an error trying to open the application.';
+                }
             }
-            openApplication(message.substring(2));
             break;
         case '02':
             console.log("Action 02: Do something different for action 02.");
-            // Add the code for action 02 here
+            res = 'Action 2.';
             break;
         case '03':
-            console.log("Action 03: Another distinct action for action 03.");
-            // Add the code for action 03 here
+            console.log("Action 03: Do something different for action 03.");
+            res = 'Action 3.';
             break;
-        // Add more cases as needed for other action codes
         default:
             console.log("Default case: No specific action found for this code.");
-            // Add the default action code here
+            res = "No specific action found for this code.";
     }
+
     return res;
 }
 
+
 function openApplication(appName) {
-    // Determine the platform
-    const platform = process.platform;
+    return new Promise((resolve, reject) => {
+        const platform = process.platform;
 
-    // Construct the command based on the platform
-    let command;
-    if (platform === "win32") { // Windows
-        command = `start ${appName}`;
-    } else if (platform === "darwin") { // macOS
-        command = `open -a "${appName}"`;
-    } else if (platform === "linux") { // Linux
-        command = `xdg-open ${appName}`; // This might need adjustments depending on the app
-    } else {
-        console.error('Unsupported platform');
-        return;
-    }
-
-    // Execute the command
-    exec(command, (error, stdout, stderr) => {
-        if (error) {
-            console.error(`Could not open the application: ${error}`);
+        let command;
+        if (platform === "win32") { // Windows
+            command = `start "" "${appName}://"`;
+        } else if (platform === "darwin") { // macOS
+            command = `open -a "${appName}"`;
+        } else if (platform === "linux") { // Linux
+            command = `xdg-open ${appName}`;
+        } else {
+            console.error('Unsupported platform');
+            reject(new Error('Unsupported platform'));
             return;
         }
-        if (stderr) {
-            console.error(`Error: ${stderr}`);
-            return;
-        }
-        console.log(`Application opened: ${stdout}`);
+
+        exec(command, (error, stdout, stderr) => {
+            if (error) {
+                console.error(`Could not open the application: ${error}`);
+                resolve(false); // Resolve to false instead of reject to indicate command failure, not function failure
+                return;
+            }
+            if (stderr) {
+                console.error(`Error: ${stderr}`);
+                resolve(false);
+                return;
+            }
+            resolve(true);
+        });
     });
 }
 

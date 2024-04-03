@@ -135,69 +135,33 @@ const displayMessage = (message, isUserMessage) => {
 
 
 
-
 // This function analyzes the chatbot message based on the first character
-const analyzeAndDisplayChatbotMessage = (message) => {
-    // Get the first character of the message
+const analyzeAndDisplayChatbotMessage = async (message) => {
     const actionCode = message.charAt(0);
-
     
-    switch (actionCode) {
-        case '0':
-            console.log('Action 0: software');
-            let res = window.electronAPI.softwareScript(message.substring(1));
-            if (res === '-'){
+    try {
+        switch (actionCode) {
+            case '0':
+                console.log('Action 0: software');
+                let res = await window.electronAPI.softwareScript(message.substring(1));
                 console.log(res);
-                let output = 'Opening ' + message.substring(3) + '...';
-                displayMessage(output, false);
+                displayMessage(res, false);
                 break;
-            }
-            console.log(res);
-            displayMessage(res, false);
-            break;
-        case '1':
-            console.log('Action 1: ', message);
-            displayMessage(message.substring(3), false);
-            break;
-        case '2':
-            console.log('Action 2: ', message);
-            displayMessage(message.substring(1), false);
-            break;
-        case '3':
-            console.log('Action 3: ', message);
-            displayMessage(message.substring(1), false);
-            break;
-        case '4':
-            console.log('Action 4: ', message);
-            displayMessage(message.substring(1), false);
-            break;
-        case '5':
-            console.log('Action 5: ', message);
-            displayMessage(message.substring(1), false);
-            break;
-        case '6':
-            console.log('Action 6: ', message);
-            displayMessage(message.substring(1), false);
-            break;
-        case '7':
-            console.log('Action 7: ', message);
-            displayMessage(message.substring(1), false);
-            break;
-        case '8':
-            console.log('Action 8: ', message);
-            displayMessage(message.substring(1), false);
-            break;
-    }
-
-    if (actionCode === 'A'){
-        console.log("Can't understand the request");
-        displayMessage("Can't understand the request", false);
-        return
-    }
-    if (actionCode === 'B'){
-        console.log("Can't understand the request");
-        displayMessage("Can't receive response from llm api", false);
-        return
+            case '1':
+                console.log('Action 1: ', message);
+                displayMessage(message.substring(3), false);
+                break;
+            default:
+                if (actionCode === 'A' || actionCode === 'B') {
+                    console.log("Can't understand the request");
+                    displayMessage("Sorry I did not understand your request", false);
+                }else{
+                    console.log("other request than software and hardware");
+                }
+        }
+    } catch (error) {
+        console.error("An error occurred:", error);
+        displayMessage("An error occurred processing your request.", false);
     }
 };
 
