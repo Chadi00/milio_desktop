@@ -33,6 +33,7 @@
   "license": "MIT",
   "dependencies": {
     "electron-squirrel-startup": "^1.0.0",
-    "markdown-it": "^14.1.0"
+    "markdown-it": "^14.1.0",
+    "screenshot-desktop": "^1.15.0"
   }
 }

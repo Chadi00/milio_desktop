@@ -1,9 +1,11 @@
 const { exec } = require('child_process');
 const fs = require('fs').promises;
 const path = require('path');
+const os = require('os');
+const screenshot = require('screenshot-desktop');
 
 async function softwareScript(message) {
-    if (message.length < 3) {
+    if (message.length < 2) {
         console.log("Message too short.");
         return "Message too short.";
     }
@@ -19,7 +21,7 @@ async function softwareScript(message) {
             } else {
                 try {
                     const wasOpened = await openApplication(message.substring(2));
-                    res = wasOpened ? '💖 Opened **' + message.substring(2) + '**': 'Failed to open the application. Ensure it is available on your computer.';
+                    res = wasOpened ? '💖 Opened **' + message.substring(2) + '**': 'Failed to open the application **'+ message.substring(2)  +'**. Ensure it is available on your computer.';
                 } catch (error) {
                     console.error(`Error: ${error}`);
                     res = 'Encountered an error trying to open the application. *Ensure it is available on your computer*.';
@@ -33,7 +35,7 @@ async function softwareScript(message) {
             } else {
                 try {
                     const wasClosed = await closeApplication(message.substring(2));
-                    res = wasClosed ? '💖 Closed **' + message.substring(2) + '**' : 'Failed to close the application. Ensure it is the right name and is running on your computer.';
+                    res = wasClosed ? '💖 Closed **' + message.substring(2) + '**' : 'Failed to close the application **'+ message.substring(2)  +'**. Ensure it is the right name and is running on your computer.';
                 } catch (error) {
                     console.error(`Error: ${error}`);
                     res = 'Encountered an error trying to close the application. *Ensure it is the right name and is running on your computer.*.';
@@ -142,6 +144,30 @@ async function softwareScript(message) {
                 } catch (error) {
                     console.error(`Error: ${error}`);
                     res = 'Encountered an error trying to delete the folder. *Make sure that the folder is located on the desktop and there is no typo in your request*';
+                }
+            }
+            break;
+        case '11':
+            console.log("Action 11: Take a screenshot");
+            try {
+                const tookScreenshot = await takeScreenshotAndSave();
+                res = tookScreenshot ? '💖 The screenshot is save on your desktop **' : 'Failed to take the screenshot and save it on your desktop.';
+            } catch (error) {
+                console.error(`Error: ${error}`);
+                res = 'Encountered an error trying to take the screenshot and save it on your desktop.';
+            }
+            break;
+        case '14':
+            console.log("Action 14: Open url");
+            if (message.substring(2) === '0') {
+                res = 'Sorry, I was not able to understand what url you want to open. *Make sure that the request is comprehensive and that the url is emphasized*. Example : open youtube.com';
+            } else {
+                try {
+                    const urlOpened = await openURL(message.substring(2));
+                    res = urlOpened ? '💖 Opened url on your default browser **' : 'Failed to open the url on your browser, *Make sure that the request is comprehensive and that the url is emphasized*. Example : open youtube.com*';
+                } catch (error) {
+                    console.error(`Error: ${error}`);
+                    res = 'Encountered an error trying to open the url. *Make sure that the request is comprehensive and that the url is emphasized*. Example : open youtube.com*';
                 }
             }
             break;
@@ -391,5 +417,62 @@ function deleteFolder(folderName) {
         }
     });
 }
+
+function takeScreenshotAndSave() {
+    return new Promise((resolve, reject) => {
+        const desktopPath = path.join(os.homedir(), 'Desktop'); // Path to the user's Desktop
+        const fileName = `screenshot-${new Date().toISOString().replace(/[:.]/g, '-')}.png`; // Create a unique file name
+        const filePath = path.join(desktopPath, fileName); // Full path for the screenshot file
+
+        screenshot({ filename: filePath }).then(() => {
+            console.log(`Screenshot saved: ${filePath}`);
+            resolve(filePath); // Resolve with the file path of the screenshot
+        }).catch((error) => {
+            console.error(`Could not take screenshot: ${error}`);
+            reject(new Error(`Could not take screenshot: ${error}`));
+        });
+    });
+}
+
+
+function openURL(url) {
+    return new Promise((resolve, reject) => {
+        if (!url) {
+            console.error('No URL provided');
+            reject(new Error('No URL provided'));
+            return;
+        }
+
+        const platform = process.platform;
+        let command;
+
+        if (platform === "win32") { // Windows
+            command = `start "" "${url}"`;
+        } else if (platform === "darwin") { // macOS
+            command = `open "${url}"`;
+        } else if (platform === "linux") { // Linux
+            command = `xdg-open "${url}"`;
+        } else {
+            console.error('Unsupported platform');
+            reject(new Error('Unsupported platform'));
+            return;
+        }
+
+        exec(command, (error, stdout, stderr) => {
+            if (error) {
+                console.error(`Could not open the URL: ${error}`);
+                resolve(false); // Resolve to false to indicate command failure, not function failure
+                return;
+            }
+            if (stderr) {
+                console.error(`Error: ${stderr}`);
+                resolve(false);
+                return;
+            }
+            resolve(true);
+        });
+    });
+}
+
 
 module.exports = softwareScript;
