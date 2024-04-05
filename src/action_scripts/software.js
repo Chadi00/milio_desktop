@@ -157,6 +157,26 @@ async function softwareScript(message) {
                 res = 'Encountered an error trying to take the screenshot and save it on your desktop.';
             }
             break;
+        case '12':
+            console.log("Action 12: Play music on apple music on MacOS");
+            try {
+                const playMusic = await playMusicInApp(message.substring(2));
+                res = playMusic ? '💖 Music Playing ' : 'Failed to play music on apple music.';
+            } catch (error) {
+                console.error(`Error: ${error}`);
+                res = 'Encountered an error trying to play music on apple music.';
+            }
+            break;
+        case '13':
+            console.log("Action 13: Pause music on apple music on MacOS");
+            try {
+                const pausedMusic = await pauseMusic();
+                res = pausedMusic ? '💖 Music Paused ' : 'Failed to pause music on apple music.';
+            } catch (error) {
+                console.error(`Error: ${error}`);
+                res = 'Encountered an error trying to pause music on apple music.';
+            }
+            break;
         case '14':
             console.log("Action 14: Open url");
             if (message.substring(2) === '0') {
@@ -212,6 +232,7 @@ function openApplication(appName) {
         });
     });
 }
+
 
 
 function closeApplication(appName) {
@@ -433,6 +454,79 @@ function takeScreenshotAndSave() {
         });
     });
 }
+
+
+
+
+function playMusicInApp(input) {
+    return new Promise((resolve, reject) => {
+        let [nameOfMusic, nameOfPlaylist, musicApp] = input.split('-');
+
+        // Preprocess the song name to remove "featuring" and anything that follows
+        const featuringRegex = /\s+(feat\.|featuring)\s+.*/i;
+        nameOfMusic = nameOfMusic.replace(featuringRegex, '');
+
+        if (musicApp.toLowerCase() === 'applemusic') {
+            const script = `
+tell application "Music"
+    set thePlaylist to the first playlist whose name is "${nameOfPlaylist}"
+    if not exists thePlaylist then
+        return false
+    end if
+    set theTracks to tracks of thePlaylist whose name contains "${nameOfMusic}"
+    if theTracks is {} then
+        return false
+    else
+        play item 1 of theTracks
+        return true
+    end if
+end tell
+`;
+            exec(`osascript -e '${script}'`, (error, stdout, stderr) => {
+                if (error || stderr) {
+                    console.error(`Error playing the track: ${error || stderr}`);
+                    resolve(false); // Use resolve to return false in case of error
+                    return;
+                }
+                // Check stdout for the script result
+                if (stdout.trim() === 'true') {
+                    console.log(`Playing ${nameOfMusic} from ${nameOfPlaylist} on Apple Music.`);
+                    resolve(true);
+                } else {
+                    console.log(`Could not find ${nameOfMusic} in ${nameOfPlaylist} on Apple Music.`);
+                    resolve(false);
+                }
+            });
+        } else {
+            console.error('Unsupported music app');
+            resolve(false); // Unsupported music app also results in false
+        }
+    });
+}
+
+
+
+function pauseMusic() {
+    return new Promise((resolve, reject) => {
+        const script = `
+tell application "Music"
+    pause
+end tell
+`;
+        exec(`osascript -e '${script}'`, (error, stdout, stderr) => {
+            if (error || stderr) {
+                console.error(`Error pausing the music: ${error || stderr}`);
+                resolve(false); // Use resolve with false in case of error
+                return;
+            }
+            console.log("Music playback paused.");
+            resolve(true); // Successfully paused the music
+        });
+    });
+}
+
+
+
 
 
 function openURL(url) {
