@@ -21,7 +21,7 @@ async function softwareScript(message) {
             } else {
                 try {
                     const wasOpened = await openApplication(message.substring(2));
-                    res = wasOpened ? '💖 Opened **' + message.substring(2) + '**': 'Failed to open the application **'+ message.substring(2)  +'**. Ensure it is available on your computer.';
+                    res = wasOpened ? '🚀 Opened **' + message.substring(2) + '**': 'Failed to open the application **'+ message.substring(2)  +'**. Ensure it is available on your computer.';
                 } catch (error) {
                     console.error(`Error: ${error}`);
                     res = 'Encountered an error trying to open the application. *Ensure it is available on your computer*.';
@@ -35,7 +35,7 @@ async function softwareScript(message) {
             } else {
                 try {
                     const wasClosed = await closeApplication(message.substring(2));
-                    res = wasClosed ? '💖 Closed **' + message.substring(2) + '**' : 'Failed to close the application **'+ message.substring(2)  +'**. Ensure it is the right name and is running on your computer.';
+                    res = wasClosed ? '❌ Closed **' + message.substring(2) + '**' : 'Failed to close the application **'+ message.substring(2)  +'**. Ensure it is the right name and is running on your computer.';
                 } catch (error) {
                     console.error(`Error: ${error}`);
                     res = 'Encountered an error trying to close the application. *Ensure it is the right name and is running on your computer.*.';
@@ -50,7 +50,7 @@ async function softwareScript(message) {
                 try {
                     const correctedFileName = message.substring(2).replace('|', '.');
                     const fileOpened = await openFile(correctedFileName);
-                    res = fileOpened ? '💖 Opened file on your desktop : **' + correctedFileName + '**': 'Failed to open the file. Ensure it is the **right name : ' + correctedFileName + '** and is **located on your desktop**.';
+                    res = fileOpened ? '📄 Opened file on your desktop : **' + correctedFileName + '**': 'Failed to open the file. Ensure it is the **right name : ' + correctedFileName + '** and is **located on your desktop**.';
                 } catch (error) {
                     console.error(`Error: ${error}`);
                     res = 'Encountered an error trying to open the file. Ensure it is the **right name : ' + correctedFileName + '** and is **located on your desktop**.';
@@ -69,7 +69,7 @@ async function softwareScript(message) {
                 try {
                     const correctedFileName = message.substring(2).replace('|', '.');
                     const fileCreated = await createFile(correctedFileName, "Hello");
-                    res = fileCreated ? '💖 Created file on your desktop : **' + correctedFileName + '**' : 'Failed to create the file.';
+                    res = fileCreated ? '🆕📄 Created file on your desktop : **' + correctedFileName + '**' : 'Failed to create the file.';
                 } catch (error) {
                     console.error(`Error: ${error}`);
                     res = 'Encountered an error trying to create the file.';
@@ -83,7 +83,7 @@ async function softwareScript(message) {
             } else {
                 try {
                     const fileRenamed = await renameFile(message.substring(2));
-                    res = fileRenamed ? '💖 Renamed file on your desktop.' : 'Failed to rename the file.';
+                    res = fileRenamed ? '✏️📄 Renamed file on your desktop.' : 'Failed to rename the file.';
                 } catch (error) {
                     console.error(`Error: ${error}`);
                     res = 'Encountered an error trying to rename the file. *Make sure that the request is complete and that the file name, the type and the new name are emphasized./n example : rename old.pdf to new *';
@@ -98,7 +98,7 @@ async function softwareScript(message) {
                 try {
                     const correctedFileName = message.substring(2).replace('|', '.');
                     const fileDeleted = await deleteFile(correctedFileName);
-                    res = fileDeleted ? '💖 Deleted file on your desktop : **' + correctedFileName + "**" : 'Failed to delete the file on your desktop, *Make sure a file named **' + correctedFileName + '** is in your desktop*.';
+                    res = fileDeleted ? '🗑️📄 Deleted file on your desktop : **' + correctedFileName + "**" : 'Failed to delete the file on your desktop, *Make sure a file named **' + correctedFileName + '** is in your desktop*.';
                 } catch (error) {
                     console.error(`Error: ${error}`);
                     res = 'Encountered an error trying to delete the file. *Make sure a file named **' + correctedFileName + '** is in your desktop*.';
@@ -112,7 +112,7 @@ async function softwareScript(message) {
             } else {
                 try {
                     const folderCreated = await createFolder(message.substring(2));
-                    res = folderCreated ? '💖 Created folder on your desktop : **' + message.substring(2) + "**" : 'Failed to create the folder on your desktop, *Make sure that the request is complete and that the folder name is emphasized*.';
+                    res = folderCreated ? '🆕📁 Created folder on your desktop : **' + message.substring(2) + "**" : 'Failed to create the folder on your desktop, *Make sure that the request is complete and that the folder name is emphasized*.';
                 } catch (error) {
                     console.error(`Error: ${error}`);
                     res = 'Encountered an error trying to create the folder. *Make sure that the request is complete and that the folder name is emphasized*.';
@@ -126,7 +126,7 @@ async function softwareScript(message) {
             } else {
                 try {
                     const folderRenamed = await renameFolder(message.substring(2));
-                    res = folderRenamed ? '💖 Renamed folder on your desktop **' : 'Failed to rename the folder on your desktop, *Make sure that the folder is located on the desktop and that the new name is emphasized*.';
+                    res = folderRenamed ? '✏️📁 Renamed folder on your desktop **' : 'Failed to rename the folder on your desktop, *Make sure that the folder is located on the desktop and that the new name is emphasized*.';
                 } catch (error) {
                     console.error(`Error: ${error}`);
                     res = 'Encountered an error trying to rename the folder. *Make sure that the folder is located on the desktop and that the new name is emphasized*';
@@ -140,7 +140,7 @@ async function softwareScript(message) {
             } else {
                 try {
                     const folderDeleted = await deleteFolder(message.substring(2));
-                    res = folderDeleted ? '💖 Deleted folder on your desktop **' : 'Failed to delete the folder on your desktop, *Make sure that the folder is located on the desktop*.';
+                    res = folderDeleted ? '🗑️📁 Deleted folder on your desktop **' : 'Failed to delete the folder on your desktop, *Make sure that the folder is located on the desktop*.';
                 } catch (error) {
                     console.error(`Error: ${error}`);
                     res = 'Encountered an error trying to delete the folder. *Make sure that the folder is located on the desktop and there is no typo in your request*';
@@ -151,7 +151,7 @@ async function softwareScript(message) {
             console.log("Action 11: Take a screenshot");
             try {
                 const tookScreenshot = await takeScreenshotAndSave();
-                res = tookScreenshot ? '💖 The screenshot is save on your desktop **' : 'Failed to take the screenshot and save it on your desktop.';
+                res = tookScreenshot ? '📸 The screenshot is save on your desktop **' : 'Failed to take the screenshot and save it on your desktop.';
             } catch (error) {
                 console.error(`Error: ${error}`);
                 res = 'Encountered an error trying to take the screenshot and save it on your desktop.';
@@ -161,7 +161,7 @@ async function softwareScript(message) {
             console.log("Action 12: Play music on apple music on MacOS");
             try {
                 const playMusic = await playMusicInApp(message.substring(2));
-                res = playMusic ? '💖 Music Playing ' : 'Failed to play music on apple music.';
+                res = playMusic ? '▶️🎵 Music Playing ' : 'Failed to play music on apple music.';
             } catch (error) {
                 console.error(`Error: ${error}`);
                 res = 'Encountered an error trying to play music on apple music.';
@@ -171,7 +171,7 @@ async function softwareScript(message) {
             console.log("Action 13: Pause music on apple music on MacOS");
             try {
                 const pausedMusic = await pauseMusic();
-                res = pausedMusic ? '💖 Music Paused ' : 'Failed to pause music on apple music.';
+                res = pausedMusic ? '⏸️🎵 Music Paused ' : 'Failed to pause music on apple music.';
             } catch (error) {
                 console.error(`Error: ${error}`);
                 res = 'Encountered an error trying to pause music on apple music.';
@@ -184,7 +184,7 @@ async function softwareScript(message) {
             } else {
                 try {
                     const urlOpened = await openURL(message.substring(2));
-                    res = urlOpened ? '💖 Opened url on your default browser **' : 'Failed to open the url on your browser, *Make sure that the request is comprehensive and that the url is emphasized*. Example : open youtube.com*';
+                    res = urlOpened ? '🔗 Opened url on your default browser **' : 'Failed to open the url on your browser, *Make sure that the request is comprehensive and that the url is emphasized*. Example : open youtube.com*';
                 } catch (error) {
                     console.error(`Error: ${error}`);
                     res = 'Encountered an error trying to open the url. *Make sure that the request is comprehensive and that the url is emphasized*. Example : open youtube.com*';
