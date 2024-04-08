@@ -1,18 +1,29 @@
-document.addEventListener('DOMContentLoaded', () => {
+function initMainApp() {
     const appDiv = document.getElementById('app');
+    appDiv.innerHTML = ''; // Clear existing content
 
-    // Create chat interface
+    // Create the chat interface components
     const chatContainer = document.createElement('div');
     chatContainer.id = 'chat-container';
 
     const chatHeader = document.createElement('h1');
-    chatHeader.textContent = '💖 milio';
+    chatHeader.textContent = '💖 Milio';
     chatHeader.className = 'chat-header';
+
+    // Create a settings gear icon
+    const settingsIcon = document.createElement('i');
+    settingsIcon.className = 'fas fa-cog settings-icon'; // Use FontAwesome's gear icon
+    settingsIcon.style.position = 'absolute';
+    settingsIcon.style.top = '10px';
+    settingsIcon.style.right = '10px';
+    settingsIcon.style.cursor = 'pointer'; // Change cursor on hover
+    settingsIcon.addEventListener('click', function() {
+        showSettingsModal();
+    });
 
     const chatMessages = document.createElement('div');
     chatMessages.id = 'chat-messages';
 
-    // Input container that includes both the text input and the send icon
     const inputContainer = document.createElement('div');
     inputContainer.className = 'input-container';
 
@@ -21,39 +32,31 @@ document.addEventListener('DOMContentLoaded', () => {
     userInput.id = 'user-input';
     userInput.placeholder = 'Type a message...';
 
-    // Create the send icon
     const sendIcon = document.createElement('i');
     sendIcon.className = 'fas fa-arrow-up send-icon';
-    sendIcon.innerHTML = ''; 
 
-    // Add event listener for the Enter key on userInput
-    userInput.addEventListener('keydown', function(event) {
-        if (event.key === 'Enter') {
-            event.preventDefault(); // Prevent default form submission
-            if (userInput.value.trim()) { // Check if input is not just whitespace
-                sendMessage();
-            }
-        }
-    });
-
-    sendIcon.addEventListener('click', () => {
-        if (!sendIcon.classList.contains('loading')) {
-            sendMessage();
-        }
-        // Else, do nothing since we're waiting for a response
-    });
-
-    // Append the userInput and sendIcon to the inputContainer
     inputContainer.appendChild(userInput);
     inputContainer.appendChild(sendIcon);
 
-    // Append components to chatContainer
     chatContainer.appendChild(chatHeader);
+    chatContainer.appendChild(settingsIcon); // Add the settings icon to the chat container
     chatContainer.appendChild(chatMessages);
-    chatContainer.appendChild(inputContainer); // Use inputContainer instead of appending userInput and sendButton separately
+    chatContainer.appendChild(inputContainer);
 
     appDiv.appendChild(chatContainer);
-});
+
+    // Event listeners for sending messages
+    userInput.addEventListener('keydown', function(event) {
+        if (event.key === 'Enter') {
+            event.preventDefault(); // Prevent default action
+            sendMessage(); // Send message
+        }
+    });
+
+    sendIcon.addEventListener('click', function() {
+        sendMessage(); // Send message
+    });
+}
 
 
 
@@ -77,11 +80,16 @@ const sendMessage = async () => {
     displayMessage(userInput, true);
     userInputField.value = '';
 
+    // Retrieve the stored JWT token
+    const storedToken = localStorage.getItem('jwtToken');
+
     try {
         const response = await fetch('https://server.lostengineering.com/chat', {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
+                // Include the JWT token in the Authorization header
+                'Authorization': `Bearer ${storedToken}`
             },
             body: JSON.stringify({ Message: userInput }),
         });
@@ -100,6 +108,7 @@ const sendMessage = async () => {
         sendIcon.classList.add('fas', 'fa-arrow-up'); // Revert icon back to the send symbol
     }
 };
+
 
 
 
@@ -164,6 +173,58 @@ const analyzeAndDisplayChatbotMessage = async (message) => {
         displayMessage("An error occurred processing your request.", false);
     }
 };
+
+
+function showSettingsModal() {
+    // Create the modal container
+    const modal = document.createElement('div');
+    modal.style.position = 'fixed';
+    modal.style.left = '0';
+    modal.style.top = '0';
+    modal.style.width = '100%';
+    modal.style.height = '100%';
+    modal.style.backgroundColor = 'rgba(0, 0, 0, 0.5)';
+    modal.style.display = 'flex';
+    modal.style.justifyContent = 'center';
+    modal.style.alignItems = 'center';
+    modal.style.zIndex = '1000';
+
+    // Create the modal content box
+    const modalContent = document.createElement('div');
+    modalContent.style.background = 'white';
+    modalContent.style.padding = '20px';
+    modalContent.style.borderRadius = '5px';
+    modalContent.style.textAlign = 'center';
+    modalContent.style.maxWidth = '400px';
+    modalContent.style.width = '80%';
+
+    // Add buttons to the modal content
+    const logoutButton = document.createElement('button');
+    logoutButton.textContent = 'Logout';
+    logoutButton.onclick = function() {
+        logout(); // Call the logout function
+        modal.remove(); // Remove the modal
+    };
+
+    const deleteAccountButton = document.createElement('button');
+    deleteAccountButton.textContent = 'Delete Account';
+    deleteAccountButton.style.marginLeft = '10px';
+    deleteAccountButton.onclick = function() {
+        deleteAccount();
+        modal.remove();
+    };
+    
+
+    // Add the buttons to the modal content
+    modalContent.appendChild(logoutButton);
+    modalContent.appendChild(deleteAccountButton);
+
+    // Append the content to the modal container
+    modal.appendChild(modalContent);
+
+    // Append the modal to the document body or appDiv
+    document.body.appendChild(modal); // or appDiv.appendChild(modal);
+}
 
 
 
