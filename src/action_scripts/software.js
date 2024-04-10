@@ -1,4 +1,5 @@
 const { exec } = require('child_process');
+const { dialog } = require('electron');
 const fs = require('fs').promises;
 const path = require('path');
 const os = require('os');
@@ -567,6 +568,9 @@ function openURL(url) {
         });
     });
 }
+
+
+  
 
 
 module.exports = softwareScript;

@@ -1,10 +1,12 @@
 // preload.js
 const { contextBridge, ipcRenderer } = require('electron');
 const softwareScript = require('./action_scripts/software');
-const jwtDecode = require('jwt-decode'); // Require jwt-decode here
+const hardwareScript = require('./action_scripts/hardware');
+const jwtDecode = require('jwt-decode'); 
 
 // Expose in the main world
 contextBridge.exposeInMainWorld('electronAPI', {
-    softwareScript: softwareScript, // Expose softwareScript function to the renderer
+    softwareScript: softwareScript, 
+    hardwareScript: hardwareScript,
     decodeJWT: (token) => jwtDecode(token), // Expose a function to decode JWT
 });

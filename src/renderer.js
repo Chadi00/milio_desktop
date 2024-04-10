@@ -151,14 +151,16 @@ const analyzeAndDisplayChatbotMessage = async (message) => {
     try {
         switch (actionCode) {
             case '0':
-                console.log('Action 0: software');
+                console.log('Action Software');
                 let res = await window.electronAPI.softwareScript(message.substring(1));
                 console.log(res);
                 displayMessage(res, false);
                 break;
             case '1':
-                console.log('Action 1: ', message);
-                displayMessage(message.substring(3), false);
+                console.log('Action Hardware');
+                let resH = await window.electronAPI.hardwareScript(message.substring(1));
+                console.log(resH);
+                displayMessage(resH, false);
                 break;
             default:
                 if (actionCode === 'A' || actionCode === 'B') {
