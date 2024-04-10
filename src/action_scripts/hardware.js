@@ -1,4 +1,3 @@
-const os = require('os');
 const osascript = require('node-osascript');
 
 async function hardwareScript(message) {
@@ -8,7 +7,7 @@ async function hardwareScript(message) {
     }
 
     const actionCode = message.substring(0, 2);
-    let res = '-';
+    let res = ':(';
 
     switch (actionCode) {
         case '01':
@@ -131,6 +130,7 @@ function volumeDown(input) {
         });
     });
 }
+
 
 
   

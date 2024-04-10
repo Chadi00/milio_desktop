@@ -6,7 +6,7 @@ const jwtDecode = require('jwt-decode');
 
 // Expose in the main world
 contextBridge.exposeInMainWorld('electronAPI', {
-    softwareScript: softwareScript, 
+    softwareScript: softwareScript, // Expose softwareScript function to the renderer
     hardwareScript: hardwareScript,
     decodeJWT: (token) => jwtDecode(token), // Expose a function to decode JWT
 });
