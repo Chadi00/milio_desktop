@@ -4,7 +4,7 @@ document.addEventListener('DOMContentLoaded', () => {
         if (isValid) {
             loadMainContent();
         } else {
-            displayLoginForm();
+            displaySignupForm();
         }
     });
 });
@@ -27,26 +27,57 @@ async function verifyToken(token) {
     }
 }
 
-function displayLoginForm() {
-    const authFormHtml = `
-        <div id="authForms">
-            <form id="loginForm">
-                <input type="email" id="loginEmail" placeholder="Enter your email" required />
-                <input type="password" id="loginPassword" placeholder="Enter your password" required />
-                <button type="submit">Login</button>
-            </form>
-            <form id="signupForm">
-                <input type="email" id="signupEmail" placeholder="Enter your email" required />
-                <input type="password" id="signupPassword" placeholder="Enter your password" required />
-                <button type="submit">Sign Up</button>
-            </form>
+function displaySignupForm() {
+    const formsHtml = `
+        <div class="welcome-message">
+            <h1>Welcome to Milio</h1>
+            <p>An AI assistant that <em>actually</em> assists you.</p>
+        </div>
+        <div id="authForms" class="auth-forms">
+            <div id="signupSection">
+                <form id="signupForm" class="auth-form">
+                    <input type="email" id="signupEmail" placeholder="Enter your email" required />
+                    <input type="password" id="signupPassword" placeholder="Enter your password" required />
+                    <input type="password" id="confirmPassword" placeholder="Confirm your password" required />
+                    <button type="submit" class="submit-btn">Sign Up</button>
+                </form>
+                <p class="switch-form">Already have an account? <a href="#" id="showLoginForm">Log in</a></p>
+            </div>
+            <div id="loginSection" class="hidden">
+                <form id="loginForm" class="auth-form">
+                    <input type="email" id="loginEmail" placeholder="Enter your email" required />
+                    <input type="password" id="loginPassword" placeholder="Enter your password" required />
+                    <button type="submit" class="submit-btn">Login</button>
+                </form>
+                <p class="switch-form">Need an account? <a href="#" id="showSignupForm">Sign up!</a></p>
+            </div>
         </div>
     `;
-    document.getElementById('app').innerHTML = authFormHtml;
-
-    document.getElementById('loginForm').addEventListener('submit', handleLogin);
-    document.getElementById('signupForm').addEventListener('submit', handleSignup);
+    document.getElementById('app').innerHTML = formsHtml;
+    attachFormListeners();
 }
+
+
+function attachFormListeners() {
+    document.getElementById('showLoginForm').addEventListener('click', () => toggleFormsVisibility(true));
+    document.getElementById('showSignupForm').addEventListener('click', () => toggleFormsVisibility(false));
+    document.getElementById('signupForm').addEventListener('submit', handleSignup);
+    document.getElementById('loginForm').addEventListener('submit', handleLogin);
+}
+
+function toggleFormsVisibility(showLogin) {
+    const loginSection = document.getElementById('loginSection');
+    const signupSection = document.getElementById('signupSection');
+    if (showLogin) {
+        loginSection.classList.remove('hidden');
+        signupSection.classList.add('hidden');
+    } else {
+        loginSection.classList.add('hidden');
+        signupSection.classList.remove('hidden');
+    }
+}
+
+
 
 async function handleLogin(event) {
     event.preventDefault();
@@ -80,6 +111,12 @@ async function handleSignup(event) {
     event.preventDefault();
     const email = document.getElementById('signupEmail').value;
     const password = document.getElementById('signupPassword').value;
+    const confirmPassword = document.getElementById('confirmPassword').value;
+
+    if (password !== confirmPassword) {
+        alert("Passwords do not match. Please try again.");
+        return;
+    }
 
     const response = await fetch('https://server.lostengineering.com/user/signup', {
         method: 'POST',
@@ -92,6 +129,7 @@ async function handleSignup(event) {
         alert('Signup failed. Please try again.');
     }
 }
+
 
 function logout() {
     localStorage.removeItem('jwtToken');

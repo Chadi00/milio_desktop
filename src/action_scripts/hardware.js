@@ -1,4 +1,5 @@
 const osascript = require('node-osascript');
+const { exec } = require('child_process');
 
 async function hardwareScript(message) {
     if (message.length < 2) {
@@ -37,6 +38,20 @@ async function hardwareScript(message) {
                 } catch (error) {
                     console.error(`Error: ${error}`);
                     res = 'Encountered an error trying to decrease the volume. *Make sure you authorized milio to adjust the volume.*';
+                }
+            }
+            break;
+        case '05':
+            console.log("Action 05: put computer to sleep");
+            if (message.substring(2) === '0') {
+                res = 'Sorry, I was not able to understand.';
+            } else {
+                try {
+                    const computerSleeping = await putComputerToSleep();
+                    res = computerSleeping ? 'Computer sleeping...' : 'Failed to put the computer to sleep, make sure you authorized milio to put the computer to sleep.';
+                } catch (error) {
+                    console.error(`Error: ${error}`);
+                    res = 'Encountered an error trying to put the computer to sleep. *make sure you authorized milio to put the computer to sleep.*';
                 }
             }
             break;
@@ -132,7 +147,32 @@ function volumeDown(input) {
 }
 
 
-
+function putComputerToSleep() {
+    return new Promise((resolve, reject) => {
+      // Determine the command based on the operating system
+      let command;
+      if (process.platform === 'win32') {
+        command = 'rundll32.exe powrprof.dll,SetSuspendState 0,1,0';
+      } else if (process.platform === 'darwin') {
+        command = 'pmset sleepnow';
+      } else if (process.platform === 'linux') {
+        command = 'systemctl suspend';
+      } else {
+        console.error('Unsupported platform:', process.platform);
+        return resolve(false);
+      }
+  
+      // Execute the command to put the computer to sleep
+      exec(command, (err) => {
+        if (err) {
+          console.error('Error executing sleep command:', err);
+          return resolve(false);
+        } else {
+          return resolve(true);
+        }
+      });
+    });
+ }
   
 
 module.exports = hardwareScript;

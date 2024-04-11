@@ -109,3 +109,63 @@ body, html {
 #chat-messages::-webkit-scrollbar-thumb:hover {
   background: #555;
 }
+
+.auth-forms, .login-section {
+  max-width: 300px;
+  margin: auto;
+  padding: 20px;
+  box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+}
+
+.auth-form input {
+  width: calc(100% - 20px);
+  padding: 10px;
+  margin-bottom: 10px;
+  border: 1px solid #ccc;
+  border-radius: 5px;
+}
+
+.submit-btn {
+  width: 100%;
+  padding: 10px;
+  border: none;
+  background-color: #007bff;
+  color: white;
+  cursor: pointer;
+  border-radius: 5px;
+}
+
+.switch-form {
+  text-align: center;
+  margin-top: 10px;
+}
+
+.switch-form a {
+  color: #007bff;
+  text-decoration: none;
+}
+
+.hidden {
+  display: none;
+}
+
+
+.welcome-message h1 {
+  text-align: center;
+  font-size: 24px;
+  margin: 0;
+  padding: 10px 0;
+  color: #333;
+}
+
+.welcome-message p {
+  text-align: center;
+  font-size: 16px;
+  margin: 10px 0 20px;
+  color: #666;
+}
+
+.welcome-message em {
+  font-style: italic;
+  color: #007bff;
+}

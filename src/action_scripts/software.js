@@ -1,5 +1,4 @@
 const { exec } = require('child_process');
-const { dialog } = require('electron');
 const fs = require('fs').promises;
 const path = require('path');
 const os = require('os');
@@ -201,76 +200,73 @@ async function softwareScript(message) {
 }
 
 
-function openApplication(appName) {
+function execPromise(command) {
     return new Promise((resolve, reject) => {
-        const platform = process.platform;
-
-        let command;
-        if (platform === "win32") { // Windows
-            command = `start "" "${appName}://"`;
-        } else if (platform === "darwin") { // macOS
-            command = `open -a "${appName}"`;
-        } else if (platform === "linux") { // Linux
-            command = `xdg-open ${appName}`;
-        } else {
-            console.error('Unsupported platform');
-            reject(new Error('Unsupported platform'));
-            return;
-        }
-
         exec(command, (error, stdout, stderr) => {
-            if (error) {
-                console.error(`Could not open the application: ${error}`);
-                resolve(false); // Resolve to false instead of reject to indicate command failure, not function failure
-                return;
+            if (error || stderr) {
+                resolve(false); 
+            } else {
+                resolve(true);
             }
-            if (stderr) {
-                console.error(`Error: ${stderr}`);
-                resolve(false);
-                return;
-            }
-            resolve(true);
         });
     });
 }
 
-
-
-function closeApplication(appName) {
-    return new Promise((resolve, reject) => {
-        const platform = process.platform;
-
-        let command;
-        if (platform === "win32") { // Windows
-            // On Windows, you might use `taskkill` to close an application by its process name
-            command = `taskkill /IM "${appName}.exe" /F`;
-        } else if (platform === "darwin") { // macOS
-            // On macOS, you can use `pkill` to terminate processes by name
-            command = `pkill -x "${appName}"`;
-        } else if (platform === "linux") { // Linux
-            // On Linux, `pkill` can also be used similar to macOS
-            command = `pkill -x "${appName}"`;
-        } else {
-            console.error('Unsupported platform');
-            reject(new Error('Unsupported platform'));
-            return;
-        }
-
-        exec(command, (error, stdout, stderr) => {
-            if (error) {
-                console.error(`Could not close the application: ${error}`);
-                resolve(false); // Resolve to false instead of reject to indicate command failure, not function failure
-                return;
-            }
-            if (stderr) {
-                console.error(`Error: ${stderr}`);
-                resolve(false);
-                return;
-            }
-            resolve(true);
-        });
-    });
+function adjustAppNameForMacOS(appName) {
+    // Helper function to adjust app name's first letter case
+    return [appName[0].toUpperCase() + appName.slice(1), appName[0].toLowerCase() + appName.slice(1)];
 }
+
+async function openApplication(appName) {
+    const platform = process.platform;
+
+    let commands = [];
+    if (platform === "win32") {
+        commands.push(`start "" "${appName}://"`);
+    } else if (platform === "darwin") {
+        adjustAppNameForMacOS(appName).forEach(name => commands.push(`open -a "${name}"`));
+    } else if (platform === "linux") {
+        commands.push(`xdg-open ${appName}`);
+    } else {
+        console.error('Unsupported platform');
+        return Promise.reject(new Error('Unsupported platform'));
+    }
+
+    for (let command of commands) {
+        if (await execPromise(command)) {
+            return true; // Successfully opened the application
+        }
+    }
+
+    console.error(`Could not open the application: ${appName}`);
+    return false; // All attempts failed
+}
+
+async function closeApplication(appName) {
+    const platform = process.platform;
+
+    let commands = [];
+    if (platform === "win32") {
+        commands.push(`taskkill /IM "${appName}.exe" /F`);
+    } else if (platform === "darwin") {
+        adjustAppNameForMacOS(appName).forEach(name => commands.push(`pkill -x "${name}"`));
+    } else if (platform === "linux") {
+        commands.push(`pkill -x "${appName}"`);
+    } else {
+        console.error('Unsupported platform');
+        return Promise.reject(new Error('Unsupported platform'));
+    }
+
+    for (let command of commands) {
+        if (await execPromise(command)) {
+            return true; // Successfully closed the application
+        }
+    }
+
+    console.error(`Could not close the application: ${appName}`);
+    return false; // All attempts failed
+}
+
 
 function openFile(fileName) {
     return new Promise((resolve, reject) => {
