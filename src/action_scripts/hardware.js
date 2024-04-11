@@ -55,6 +55,34 @@ async function hardwareScript(message) {
                 }
             }
             break;
+        case '06':
+            console.log("Action 06: Shut down Computer");
+            if (message.substring(2) === '0') {
+                res = 'Sorry, I was not able to understand.';
+            } else {
+                try {
+                    const computerShutdown = await shutdownComputer();
+                    res = computerShutdown ? 'Computer shut down.' : 'Failed to shut down the computer, make sure you authorized milio to shut down the computer.';
+                } catch (error) {
+                    console.error(`Error: ${error}`);
+                    res = 'Encountered an error trying to shut down the computer. *make sure you authorized milio to shut down the computer.*';
+                }
+            }
+            break;
+        case '07':
+            console.log("Action 07: Restart computer");
+            if (message.substring(2) === '0') {
+                res = 'Sorry, I was not able to understand.';
+            } else {
+                try {
+                    const computerRestarting = await putComputerToSleep();
+                    res = computerRestarting ? 'Computer restarting...' : 'Failed to restart the computer, make sure you authorized milio to restart the computer.';
+                } catch (error) {
+                    console.error(`Error: ${error}`);
+                    res = 'Encountered an error trying to restart the computer. *make sure you authorized milio to restart the computer.*';
+                }
+            }
+            break;
         default:
             console.log("Default case: No specific action found for this code.");
             res = "No specific action found for this code.";
@@ -172,7 +200,57 @@ function putComputerToSleep() {
         }
       });
     });
- }
+}
   
+
+function shutdownComputer() {
+    return new Promise((resolve, reject) => {
+      let command;
+      if (process.platform === 'win32') {
+        command = 'shutdown /s /t 0'; // Immediate shutdown
+      } else if (process.platform === 'darwin' || process.platform === 'linux') {
+        command = 'sudo shutdown -h now'; // Immediate shutdown for both macOS and Linux
+      } else {
+        console.error('Unsupported platform:', process.platform);
+        return resolve(false);
+      }
+  
+      exec(command, (err) => {
+        if (err) {
+          console.error('Error executing shutdown command:', err);
+          return resolve(false);
+        } else {
+          return resolve(true);
+        }
+      });
+    });
+}
+
+
+function restartComputer() {
+    return new Promise((resolve, reject) => {
+      let command;
+      if (process.platform === 'win32') {
+        command = 'shutdown /r /t 0'; // Immediate restart
+      } else if (process.platform === 'darwin' || process.platform === 'linux') {
+        command = 'sudo shutdown -r now'; // Immediate restart for both macOS and Linux
+      } else {
+        console.error('Unsupported platform:', process.platform);
+        return resolve(false);
+      }
+  
+      exec(command, (err) => {
+        if (err) {
+          console.error('Error executing restart command:', err);
+          return resolve(false);
+        } else {
+          return resolve(true);
+        }
+      });
+    });
+}
+
+
+
 
 module.exports = hardwareScript;
