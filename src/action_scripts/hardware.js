@@ -75,7 +75,7 @@ async function hardwareScript(message) {
                 res = 'Sorry, I was not able to understand.';
             } else {
                 try {
-                    const computerRestarting = await putComputerToSleep();
+                    const computerRestarting = await restartComputer();
                     res = computerRestarting ? 'Computer restarting...' : 'Failed to restart the computer, make sure you authorized milio to restart the computer.';
                 } catch (error) {
                     console.error(`Error: ${error}`);
@@ -206,10 +206,9 @@ function putComputerToSleep() {
 function shutdownComputer() {
     return new Promise((resolve, reject) => {
       let command;
-      if (process.platform === 'win32') {
-        command = 'shutdown /s /t 0'; // Immediate shutdown
-      } else if (process.platform === 'darwin' || process.platform === 'linux') {
-        command = 'sudo shutdown -h now'; // Immediate shutdown for both macOS and Linux
+      if (process.platform === 'darwin') {
+        console.log("Shutdown...");
+        command = 'osascript -e \'tell app "System Events" to shut down\'';
       } else {
         console.error('Unsupported platform:', process.platform);
         return resolve(false);
@@ -230,10 +229,9 @@ function shutdownComputer() {
 function restartComputer() {
     return new Promise((resolve, reject) => {
       let command;
-      if (process.platform === 'win32') {
-        command = 'shutdown /r /t 0'; // Immediate restart
-      } else if (process.platform === 'darwin' || process.platform === 'linux') {
-        command = 'sudo shutdown -r now'; // Immediate restart for both macOS and Linux
+      if (process.platform === 'darwin') {
+        console.log("restarting...");
+        command = 'osascript -e \'tell app "System Events" to restart\'';
       } else {
         console.error('Unsupported platform:', process.platform);
         return resolve(false);
