@@ -1,6 +1,8 @@
 const searchGoogle = require("./action_scripts/searchCall");
 const softwareScript = require("./action_scripts/software");
 const hardwareScript = require("./action_scripts/hardware");
+const closeMilio = require("./action_scripts/quitMilio");
+const { marked } = require('marked'); 
 
 function initMainApp() {
     const appDiv = document.getElementById('app');
@@ -84,6 +86,10 @@ const sendMessage = async () => {
     displayMessage(userInput, true);
     userInputField.value = '';
 
+    if (userInput.trim() == "exit milio" || userInput.trim() == "exit Milio" || userInput.trim() == "milio exit" || userInput.trim() == "Milio exit"){
+        closeMilio();
+    }
+
     // Retrieve the stored JWT token
     const storedToken = localStorage.getItem('jwtToken');
 
@@ -124,11 +130,10 @@ const displayMessage = (message, isUserMessage) => {
 
     const messageBubble = document.createElement('div');
     if (!isUserMessage) {
-        // Use the Markdown to HTML converter for chatbot messages
-        message = markdownToHtml(message);
-        messageBubble.innerHTML = message; 
+        message = marked(message);
+        messageBubble.innerHTML = message;
     } else {
-        messageBubble.textContent = message; // Use textContent for user messages to avoid XSS
+        messageBubble.textContent = message; 
     }
     messageBubble.classList.add('message-bubble');
 
@@ -139,12 +144,13 @@ const displayMessage = (message, isUserMessage) => {
         messageContainer.classList.add('chatbot-message');
         messageBubble.classList.add('chatbot-bubble');
     }
-    
+
     messageContainer.appendChild(messageBubble);
     chatMessages.appendChild(messageContainer);
 
     messageContainer.scrollIntoView({ behavior: 'smooth' });
 };
+
 
 
 
@@ -168,16 +174,26 @@ const analyzeAndDisplayChatbotMessage = async (message) => {
                 break;
             case '4':
                 console.log("Action Search");
+                console.log("Before calling searchGoogle");
                 let res3 = await searchGoogle(message.substring(1));
-                console.log(res3);
+                console.log("After calling searchGoogle", res3);
+                console.log("search");
                 displayMessage(res3, false);
                 break;
+            case 'A':
+                console.log("Error : LLM can't understand");
+                displayMessage("Sorry, I can't understand. Please try again.");
+                break;
+            case 'B':
+                console.log("Error : LLM rate limit");
+                displayMessage("Sorry, I'm not able to help you now.Try again later.");
+                break;
             default:
-                if (actionCode === 'A' || actionCode === 'B') {
-                    console.log("Can't understand the request");
-                    displayMessage("Sorry I did not understand your request", false);
+                if (actionCode === '5' || actionCode === '6' || actionCode === '7' || actionCode === '8') {
+                    console.log("Action Direct answer : logic, creative, cs or discussion");
+                    displayMessage(message.substring(1), false);
                 }else{
-                    console.log("other request than software and hardware");
+                    console.log("other request");
                 }
         }
     } catch (error) {
@@ -201,6 +217,13 @@ function showSettingsModal() {
     modal.style.alignItems = 'center';
     modal.style.zIndex = '1000';
 
+    // Event listener to close the modal if the user clicks outside the modal content
+    modal.addEventListener('click', function(event) {
+        if (event.target === modal) {
+            modal.remove();
+        }
+    });
+
     // Create the modal content box
     const modalContent = document.createElement('div');
     modalContent.style.background = 'white';
@@ -209,6 +232,11 @@ function showSettingsModal() {
     modalContent.style.textAlign = 'center';
     modalContent.style.maxWidth = '400px';
     modalContent.style.width = '80%';
+
+    // Prevent clicks inside the modal content from closing the modal
+    modalContent.addEventListener('click', function(event) {
+        event.stopPropagation(); // Stops the click event from propagating to the parent elements
+    });
 
     // Add buttons to the modal content
     const logoutButton = document.createElement('button');
@@ -225,7 +253,6 @@ function showSettingsModal() {
         deleteAccount();
         modal.remove();
     };
-    
 
     // Add the buttons to the modal content
     modalContent.appendChild(logoutButton);
@@ -240,47 +267,9 @@ function showSettingsModal() {
 
 
 
-
-const markdownToHtml = (markdownText) => {
-    // Ensure markdownText is a string to avoid errors
-    if (typeof markdownText !== 'string') {
-        console.error('Invalid input: markdownText must be a string.');
-        return ''; // Return an empty string or some error message
-    }
-
-    // Convert headers
-    markdownText = markdownText.replace(/(######\s(.*))/g, '<h6>$2</h6>')
-                               .replace(/(#####\s(.*))/g, '<h5>$2</h5>')
-                               .replace(/(####\s(.*))/g, '<h4>$2</h4>')
-                               .replace(/(###\s(.*))/g, '<h3>$2</h3>')
-                               .replace(/(##\s(.*))/g, '<h2>$2</h2>')
-                               .replace(/(#\s(.*))/g, '<h1>$2</h1>');
-
-    // Convert bold text
-    markdownText = markdownText.replace(/\*\*(.*?)\*\*/g, '<b>$1</b>');
-
-    // Convert italic text
-    markdownText = markdownText.replace(/\*(.*?)\*/g, '<i>$1</i>');
-
-    // Convert inline code
-    markdownText = markdownText.replace(/`(.*?)`/g, '<code>$1</code>');
-
-    // Convert blockquotes
-    markdownText = markdownText.replace(/^\s*>\s*(.*)/gm, '<blockquote>$1</blockquote>');
-
-    // Convert unordered lists (simple version, does not handle nested lists)
-    markdownText = markdownText.replace(/^\s*-\s*(.*)/gm, '<ul><li>$1</li></ul>');
-    markdownText = markdownText.replace(/<\/ul><ul>/g, '');
-
-    // Convert links
-    markdownText = markdownText.replace(/\[([^\]]+)\]\(([^)]+)\)/g, '<a href="$2">$1</a>');
-
-    // Convert code blocks
-    markdownText = markdownText.replace(/```([^`]+)```/g, '<pre><code>$1</code></pre>');
-
-    // Handle new lines
-    markdownText = markdownText.replace(/\n/g, '<br>');
-
-    return markdownText;
-};
+marked.setOptions({
+    gfm: true,
+    tables: true
+  });
+  
 

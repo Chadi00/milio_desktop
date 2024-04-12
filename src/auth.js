@@ -133,7 +133,7 @@ async function handleSignup(event) {
 
 function logout() {
     localStorage.removeItem('jwtToken');
-    displayLoginForm(); 
+    displaySignupForm(); 
 }
 
 
@@ -165,7 +165,7 @@ async function deleteAccount() {
                 // Handle unauthorized error specifically
                 alert('Session expired. Please log in again.');
                 localStorage.removeItem('jwtToken'); // Consider logging the user out
-                displayLoginForm();
+                displaySignupForm();
                 return;
             }
             throw new Error('Failed to delete account');
@@ -173,7 +173,7 @@ async function deleteAccount() {
 
         alert('Account successfully deleted.');
         localStorage.removeItem('jwtToken'); // Clear the JWT token
-        displayLoginForm(); // Redirect user to login page
+        displaySignupForm(); // Redirect user to login page
     } catch (error) {
         console.error('Error deleting account:', error);
         alert('Failed to delete account. Please try again.');
