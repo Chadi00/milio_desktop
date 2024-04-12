@@ -1,3 +1,7 @@
+const searchGoogle = require("./action_scripts/searchCall");
+const softwareScript = require("./action_scripts/software");
+const hardwareScript = require("./action_scripts/hardware");
+
 function initMainApp() {
     const appDiv = document.getElementById('app');
     appDiv.innerHTML = ''; // Clear existing content
@@ -152,15 +156,21 @@ const analyzeAndDisplayChatbotMessage = async (message) => {
         switch (actionCode) {
             case '0':
                 console.log('Action Software');
-                let res = await window.electronAPI.softwareScript(message.substring(1));
-                console.log(res);
-                displayMessage(res, false);
+                let res1 = await softwareScript(message.substring(1));
+                console.log(res1);
+                displayMessage(res1, false);
                 break;
             case '1':
                 console.log('Action Hardware');
-                let resH = await window.electronAPI.hardwareScript(message.substring(1));
-                console.log(resH);
-                displayMessage(resH, false);
+                let res2 = await hardwareScript(message.substring(1));
+                console.log(res2);
+                displayMessage(res2, false);
+                break;
+            case '4':
+                console.log("Action Search");
+                let res3 = await searchGoogle(message.substring(1));
+                console.log(res3);
+                displayMessage(res3, false);
                 break;
             default:
                 if (actionCode === 'A' || actionCode === 'B') {
