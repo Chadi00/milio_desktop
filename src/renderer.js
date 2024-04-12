@@ -172,7 +172,7 @@ const analyzeAndDisplayChatbotMessage = async (message) => {
                 console.log(res2);
                 displayMessage(res2, false);
                 break;
-            case '4':
+            case '3':
                 console.log("Action Search");
                 console.log("Before calling searchGoogle");
                 let res3 = await searchGoogle(message.substring(1));
