@@ -3,7 +3,7 @@ const path = require('path');
 
 const createWindow = () => {
   const mainWindow = new BrowserWindow({
-    width: 465,
+    width: 550,
     height: 772,
     resizable: true,
     webPreferences: {
@@ -26,5 +26,5 @@ app.on('window-all-closed', () => {
 });
 
 ipcMain.on('close-app', () => {
-  app.quit(); // This listens for the close command and quits the app
+  app.quit(); 
 });

@@ -191,6 +191,10 @@ async function softwareScript(message) {
                 }
             }
             break;
+        case '16':
+            console.log("Action 16: Read PDF");
+            res = message.substring(2);
+            break;
         default:
             console.log("Default case: No specific action found for this code.");
             res = "No specific action found for this code.";

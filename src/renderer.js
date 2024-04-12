@@ -3,12 +3,13 @@ const softwareScript = require("./action_scripts/software");
 const hardwareScript = require("./action_scripts/hardware");
 const closeMilio = require("./action_scripts/quitMilio");
 const { marked } = require('marked'); 
+const extractTextFromPdf = require("./utils/pdf");
 
 function initMainApp() {
     const appDiv = document.getElementById('app');
     appDiv.innerHTML = ''; // Clear existing content
 
-    // Create the chat interface components
+    // Define main UI components
     const chatContainer = document.createElement('div');
     chatContainer.id = 'chat-container';
 
@@ -16,13 +17,11 @@ function initMainApp() {
     chatHeader.textContent = '💖 Milio';
     chatHeader.className = 'chat-header';
 
-    // Create a settings gear icon
     const settingsIcon = document.createElement('i');
-    settingsIcon.className = 'fas fa-cog settings-icon'; // Use FontAwesome's gear icon
+    settingsIcon.className = 'fas fa-cog settings-icon';
     settingsIcon.style.position = 'absolute';
     settingsIcon.style.top = '10px';
     settingsIcon.style.right = '10px';
-    settingsIcon.style.cursor = 'pointer'; // Change cursor on hover
     settingsIcon.addEventListener('click', function() {
         showSettingsModal();
     });
@@ -30,8 +29,23 @@ function initMainApp() {
     const chatMessages = document.createElement('div');
     chatMessages.id = 'chat-messages';
 
+    const downloadsContainer = document.createElement('div');
+    downloadsContainer.id = 'downloads-container';
+    downloadsContainer.style.position = 'fixed';
+    downloadsContainer.style.bottom = '80px';
+    downloadsContainer.style.left = '20px';
+    downloadsContainer.style.right = '20px';
+    downloadsContainer.style.display = 'none';
+
     const inputContainer = document.createElement('div');
     inputContainer.className = 'input-container';
+
+    const pdfDownloadIcon = document.createElement('i');
+    pdfDownloadIcon.className = 'fas fa-plus pdf-download-icon';
+    pdfDownloadIcon.style.cursor = 'pointer';
+    pdfDownloadIcon.addEventListener('click', function() {
+        downloadPDF();
+    });
 
     const userInput = document.createElement('input');
     userInput.type = 'text';
@@ -40,13 +54,16 @@ function initMainApp() {
 
     const sendIcon = document.createElement('i');
     sendIcon.className = 'fas fa-arrow-up send-icon';
+    sendIcon.addEventListener('click', sendMessage);
 
+    inputContainer.appendChild(pdfDownloadIcon);
     inputContainer.appendChild(userInput);
     inputContainer.appendChild(sendIcon);
 
     chatContainer.appendChild(chatHeader);
-    chatContainer.appendChild(settingsIcon); // Add the settings icon to the chat container
+    chatContainer.appendChild(settingsIcon);
     chatContainer.appendChild(chatMessages);
+    chatContainer.appendChild(downloadsContainer);
     chatContainer.appendChild(inputContainer);
 
     appDiv.appendChild(chatContainer);
@@ -54,14 +71,79 @@ function initMainApp() {
     // Event listeners for sending messages
     userInput.addEventListener('keydown', function(event) {
         if (event.key === 'Enter') {
-            event.preventDefault(); // Prevent default action
-            sendMessage(); // Send message
+            event.preventDefault();
+            sendMessage();
         }
     });
+}
 
-    sendIcon.addEventListener('click', function() {
-        sendMessage(); // Send message
-    });
+let downloadedFiles = [];
+
+
+function downloadPDF() {
+    const fileInput = document.createElement('input');
+    fileInput.type = 'file';
+    fileInput.accept = '.pdf'; // Only accept PDF files
+    fileInput.style.display = 'none'; // Hide the input element
+    document.body.appendChild(fileInput);
+
+    fileInput.onchange = function(event) {
+        if (event.target.files.length > 0) {
+            for (const file of event.target.files) {
+                displayPDFInfo(file);
+            }
+            fileInput.remove(); // Remove the input element after selection
+        }
+    };
+
+    fileInput.click(); // Open the file dialog
+}
+
+function displayPDFInfo(file) {
+    const downloadsContainer = document.getElementById('downloads-container');
+    downloadsContainer.style.display = 'flex'; // Make visible
+    downloadsContainer.style.flexDirection = 'column'; // Ensure items are stacked vertically
+
+    const pdfItem = document.createElement('div');
+    pdfItem.style.display = 'flex';
+    pdfItem.style.alignItems = 'center';
+    pdfItem.style.marginTop = '5px'; // Space between items
+
+    const pdfIcon = document.createElement('i');
+    pdfIcon.className = 'fas fa-file-pdf';
+    pdfIcon.style.color = 'red';
+    pdfIcon.style.marginRight = '5px';
+
+    const fileNameSpan = document.createElement('span');
+    fileNameSpan.textContent = file.name;
+
+    const deleteBtn = document.createElement('button');
+    deleteBtn.textContent = 'Delete';
+    deleteBtn.style.marginLeft = '10px';
+    deleteBtn.style.color = '#ff0000';
+    deleteBtn.style.border = 'none';
+    deleteBtn.style.background = 'transparent';
+    deleteBtn.style.cursor = 'pointer';
+    deleteBtn.onclick = function() {
+        pdfItem.remove(); // Remove the PDF item from the display
+        const index = downloadedFiles.findIndex(f => f.file === file);
+        if (index > -1) {
+            downloadedFiles.splice(index, 1); // Remove from the memory
+        }
+
+        // Check if there are no more PDFs displayed, and hide the container if empty
+        if (downloadsContainer.children.length === 0) {
+            downloadsContainer.style.display = 'none';
+        }
+    };
+
+    pdfItem.appendChild(pdfIcon);
+    pdfItem.appendChild(fileNameSpan);
+    pdfItem.appendChild(deleteBtn);
+    downloadsContainer.appendChild(pdfItem);
+
+    // Save the file reference in memory for future use
+    downloadedFiles.push({ file: file, element: pdfItem });
 }
 
 
@@ -70,7 +152,7 @@ function initMainApp() {
 const sendMessage = async () => {
     const userInputField = document.getElementById('user-input');
     const sendIcon = document.querySelector('.send-icon');
-    const userInput = userInputField.value.trim();
+    let userInput = userInputField.value.trim();
 
     // Return early if there's no input or if we're already waiting for a response
     if (!userInput || sendIcon.classList.contains('loading')) return;
@@ -88,6 +170,15 @@ const sendMessage = async () => {
 
     if (userInput.trim() == "exit milio" || userInput.trim() == "exit Milio" || userInput.trim() == "milio exit" || userInput.trim() == "Milio exit"){
         closeMilio();
+    }
+
+    if (downloadedFiles.length > 0) {
+        try {
+            const pdfText = await extractTextFromPdf(downloadedFiles[0].file);
+            userInput = "PDF content: " + pdfText + " User request: " + userInput;
+        } catch (error) {
+            console.error("Error extracting PDF text:", error);
+        }
     }
 
     // Retrieve the stored JWT token
@@ -116,8 +207,21 @@ const sendMessage = async () => {
         // End loading state and allow sending messages again
         sendIcon.classList.remove('loading', 'fa-spin', 'fa-circle-notch');
         sendIcon.classList.add('fas', 'fa-arrow-up'); // Revert icon back to the send symbol
+        
+        // Clear the downloadedFiles array and the contents of the downloadsContainer
+        downloadedFiles = [];
+        clearDownloadsContainer();
     }
 };
+
+function clearDownloadsContainer() {
+    const downloadsContainer = document.getElementById('downloads-container');
+    while (downloadsContainer.firstChild) {
+        downloadsContainer.removeChild(downloadsContainer.firstChild);
+    }
+    downloadsContainer.style.display = 'none'; 
+}
+
 
 
 
@@ -189,7 +293,7 @@ const analyzeAndDisplayChatbotMessage = async (message) => {
                 displayMessage("Sorry, I'm not able to help you now.Try again later.");
                 break;
             default:
-                if (actionCode === '5' || actionCode === '6' || actionCode === '7' || actionCode === '8') {
+                if (actionCode === '4' || actionCode === '5' || actionCode === '5' || actionCode === '7') {
                     console.log("Action Direct answer : logic, creative, cs or discussion");
                     displayMessage(message.substring(1), false);
                 }else{

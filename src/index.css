@@ -169,3 +169,14 @@ body, html {
   font-style: italic;
   color: #007bff;
 }
+
+
+#downloads-container {
+  background-color: #2a2a2a; /* Dark background */
+  border-radius: 20px; /* Rounded corners */
+  padding: 10px; /* Padding around content */
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.5); /* Subtle shadow */
+  max-height: 150px; /* Limit height */
+  overflow-y: auto; /* Enable vertical scrolling */
+}
+
