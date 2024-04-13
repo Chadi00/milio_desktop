@@ -4,6 +4,7 @@ const path = require('path');
 const os = require('os');
 const screenshot = require('screenshot-desktop');
 const createTimerModal = require("../utils/timer");
+const createChronometerModal = require('../utils/chrono');
 
 async function softwareScript(message) {
     if (message.length < 2) {
@@ -200,6 +201,11 @@ async function softwareScript(message) {
             console.log("Action 17: Timer");
             res = "Opened timer";
             createTimerModal();
+            break;
+        case '18':
+            console.log("Action 18: Chrono");
+            res = "Opened chronometer";
+            createChronometerModal();
             break;
         default:
             console.log("Default case: No specific action found for this code.");
