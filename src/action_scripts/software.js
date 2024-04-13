@@ -199,12 +199,12 @@ async function softwareScript(message) {
             break;
         case '17':
             console.log("Action 17: Timer");
-            res = "Opened timer";
+            res = "⏳ Opened timer";
             createTimerModal();
             break;
         case '18':
             console.log("Action 18: Chrono");
-            res = "Opened chronometer";
+            res = "⏱️ Opened chronometer";
             createChronometerModal();
             break;
         default:

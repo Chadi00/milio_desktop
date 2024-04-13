@@ -19,7 +19,7 @@ async function hardwareScript(message) {
                 try {
                     const volumeAdjustment = message.substring(2);
                     const turnedUp = await volumeUp(volumeAdjustment);
-                    res = turnedUp ? 'Volume Up' : 'Failed to increase volume, make sure you authorized milio to adjust the volume.';
+                    res = turnedUp ? '🔊 Volume Up' : 'Failed to increase volume, make sure you authorized milio to adjust the volume.';
                 } catch (error) {
                     console.error(`Error: ${error}`);
                     res = 'Encountered an error trying to increase the volume. *Make sure you authorized milio to adjust the volume.*';
@@ -34,7 +34,7 @@ async function hardwareScript(message) {
                 try {
                     const volumeAdjustment = message.substring(2);
                     const turnedDown = await volumeDown(volumeAdjustment);
-                    res = turnedDown ? 'Volume Down' : 'Failed to increase volume, make sure you authorized milio to adjust the volume.';
+                    res = turnedDown ? '🔉 Volume Down' : 'Failed to increase volume, make sure you authorized milio to adjust the volume.';
                 } catch (error) {
                     console.error(`Error: ${error}`);
                     res = 'Encountered an error trying to decrease the volume. *Make sure you authorized milio to adjust the volume.*';
@@ -48,7 +48,7 @@ async function hardwareScript(message) {
             } else {
                 try {
                     const computerSleeping = await putComputerToSleep();
-                    res = computerSleeping ? 'Computer sleeping...' : 'Failed to put the computer to sleep, make sure you authorized milio to put the computer to sleep.';
+                    res = computerSleeping ? '💤 Computer sleeping...' : 'Failed to put the computer to sleep, make sure you authorized milio to put the computer to sleep.';
                 } catch (error) {
                     console.error(`Error: ${error}`);
                     res = 'Encountered an error trying to put the computer to sleep. *make sure you authorized milio to put the computer to sleep.*';
@@ -62,7 +62,7 @@ async function hardwareScript(message) {
             } else {
                 try {
                     const computerShutdown = await shutdownComputer();
-                    res = computerShutdown ? 'Computer shut down.' : 'Failed to shut down the computer, make sure you authorized milio to shut down the computer.';
+                    res = computerShutdown ? '🔌 Computer shut down.' : 'Failed to shut down the computer, make sure you authorized milio to shut down the computer.';
                 } catch (error) {
                     console.error(`Error: ${error}`);
                     res = 'Encountered an error trying to shut down the computer. *make sure you authorized milio to shut down the computer.*';
@@ -76,7 +76,7 @@ async function hardwareScript(message) {
             } else {
                 try {
                     const computerRestarting = await restartComputer();
-                    res = computerRestarting ? 'Computer restarting...' : 'Failed to restart the computer, make sure you authorized milio to restart the computer.';
+                    res = computerRestarting ? '🔄 Computer restarting...' : 'Failed to restart the computer, make sure you authorized milio to restart the computer.';
                 } catch (error) {
                     console.error(`Error: ${error}`);
                     res = 'Encountered an error trying to restart the computer. *make sure you authorized milio to restart the computer.*';

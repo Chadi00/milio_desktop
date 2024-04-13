@@ -175,12 +175,16 @@ const sendMessage = async () => {
     }
 
     if (downloadedFiles.length > 0) {
-        try {
-            const pdfText = await extractTextFromPdf(downloadedFiles[0].file);
-            userInput = "PDF content: " + pdfText + " User request: " + userInput;
-        } catch (error) {
-            console.error("Error extracting PDF text:", error);
+        pdfContent = "";
+        for (let i = 0; i < downloadedFiles.length; i++) {
+            try {
+                const pdfText = await extractTextFromPdf(downloadedFiles[i].file);
+                pdfContent += `PDF Content number ${i+1}: ${pdfText}\n`;
+            } catch (error) {
+                console.error(`Error extracting PDF text from file ${i}:`, error);
+            }
         }
+        userInput = `${pdfContent}User request: ${userInput}`;
     }
 
     previousUserMessage = userInput; // Save user input to use it in next message (to keep context)
