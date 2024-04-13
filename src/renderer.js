@@ -78,7 +78,9 @@ function initMainApp() {
 }
 
 let downloadedFiles = [];
-
+previousUserMessage = "";
+previousSystemMessage = "";
+previousInteraction = "";
 
 function downloadPDF() {
     const fileInput = document.createElement('input');
@@ -101,13 +103,13 @@ function downloadPDF() {
 
 function displayPDFInfo(file) {
     const downloadsContainer = document.getElementById('downloads-container');
-    downloadsContainer.style.display = 'flex'; // Make visible
-    downloadsContainer.style.flexDirection = 'column'; // Ensure items are stacked vertically
+    downloadsContainer.style.display = 'flex'; 
+    downloadsContainer.style.flexDirection = 'column'; 
 
     const pdfItem = document.createElement('div');
     pdfItem.style.display = 'flex';
     pdfItem.style.alignItems = 'center';
-    pdfItem.style.marginTop = '5px'; // Space between items
+    pdfItem.style.marginTop = '5px';
 
     const pdfIcon = document.createElement('i');
     pdfIcon.className = 'fas fa-file-pdf';
@@ -160,9 +162,9 @@ const sendMessage = async () => {
     // Indicate loading state
     sendIcon.classList.add('loading');
     
-    sendIcon.classList.remove('fas', 'fa-arrow-up'); // Remove the original send icon classes
-    sendIcon.classList.add('fas', 'fa-circle-notch'); // Add the loading icon classes
-    sendIcon.classList.add('fa-spin'); // Add spinning animation
+    sendIcon.classList.remove('fas', 'fa-arrow-up'); 
+    sendIcon.classList.add('fas', 'fa-circle-notch'); 
+    sendIcon.classList.add('fa-spin'); 
 
     // Display user message immediately and clear input
     displayMessage(userInput, true);
@@ -181,6 +183,8 @@ const sendMessage = async () => {
         }
     }
 
+    previousUserMessage = userInput; // Save user input to use it in next message (to keep context)
+
     // Retrieve the stored JWT token
     const storedToken = localStorage.getItem('jwtToken');
 
@@ -189,10 +193,9 @@ const sendMessage = async () => {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
-                // Include the JWT token in the Authorization header
                 'Authorization': `Bearer ${storedToken}`
             },
-            body: JSON.stringify({ Message: userInput }),
+            body: JSON.stringify({ Message: previousInteraction + ".\n New user message : "  + userInput }),
         });
 
         if (!response.ok) {
@@ -206,7 +209,7 @@ const sendMessage = async () => {
     } finally {
         // End loading state and allow sending messages again
         sendIcon.classList.remove('loading', 'fa-spin', 'fa-circle-notch');
-        sendIcon.classList.add('fas', 'fa-arrow-up'); // Revert icon back to the send symbol
+        sendIcon.classList.add('fas', 'fa-arrow-up');
         
         // Clear the downloadedFiles array and the contents of the downloadsContainer
         downloadedFiles = [];
@@ -257,8 +260,6 @@ const displayMessage = (message, isUserMessage) => {
 
 
 
-
-// This function analyzes the chatbot message based on the first character
 const analyzeAndDisplayChatbotMessage = async (message) => {
     const actionCode = message.charAt(0);
     
@@ -268,12 +269,18 @@ const analyzeAndDisplayChatbotMessage = async (message) => {
                 console.log('Action Software');
                 let res1 = await softwareScript(message.substring(1));
                 console.log(res1);
+                previousUserMessage = "";
+                previousSystemMessage = "";
+                previousInteraction = "";
                 displayMessage(res1, false);
                 break;
             case '1':
                 console.log('Action Hardware');
                 let res2 = await hardwareScript(message.substring(1));
                 console.log(res2);
+                previousUserMessage = "";
+                previousSystemMessage = "";
+                previousInteraction = "";
                 displayMessage(res2, false);
                 break;
             case '3':
@@ -282,6 +289,8 @@ const analyzeAndDisplayChatbotMessage = async (message) => {
                 let res3 = await searchGoogle(message.substring(1));
                 console.log("After calling searchGoogle", res3);
                 console.log("search");
+                previousSystemMessage = res3;
+                previousInteraction = "Previous user message : " + previousUserMessage + ".\nPrevious System response : " + previousSystemMessage + ".\n";
                 displayMessage(res3, false);
                 break;
             case 'A':
@@ -295,6 +304,8 @@ const analyzeAndDisplayChatbotMessage = async (message) => {
             default:
                 if (actionCode === '4' || actionCode === '5' || actionCode === '5' || actionCode === '7') {
                     console.log("Action Direct answer : logic, creative, cs or discussion");
+                    previousSystemMessage = message.substring(1);
+                    previousInteraction = "Previous user message : " + previousUserMessage + ".\nPrevious System response : " + previousSystemMessage + ".\n";
                     displayMessage(message.substring(1), false);
                 }else{
                     console.log("other request");
@@ -308,7 +319,6 @@ const analyzeAndDisplayChatbotMessage = async (message) => {
 
 
 function showSettingsModal() {
-    // Create the modal container
     const modal = document.createElement('div');
     modal.style.position = 'fixed';
     modal.style.left = '0';
@@ -321,7 +331,7 @@ function showSettingsModal() {
     modal.style.alignItems = 'center';
     modal.style.zIndex = '1000';
 
-    // Event listener to close the modal if the user clicks outside the modal content
+    
     modal.addEventListener('click', function(event) {
         if (event.target === modal) {
             modal.remove();
@@ -339,15 +349,14 @@ function showSettingsModal() {
 
     // Prevent clicks inside the modal content from closing the modal
     modalContent.addEventListener('click', function(event) {
-        event.stopPropagation(); // Stops the click event from propagating to the parent elements
+        event.stopPropagation();
     });
 
-    // Add buttons to the modal content
     const logoutButton = document.createElement('button');
     logoutButton.textContent = 'Logout';
     logoutButton.onclick = function() {
-        logout(); // Call the logout function
-        modal.remove(); // Remove the modal
+        logout();
+        modal.remove();
     };
 
     const deleteAccountButton = document.createElement('button');
@@ -358,17 +367,13 @@ function showSettingsModal() {
         modal.remove();
     };
 
-    // Add the buttons to the modal content
     modalContent.appendChild(logoutButton);
     modalContent.appendChild(deleteAccountButton);
 
-    // Append the content to the modal container
     modal.appendChild(modalContent);
 
-    // Append the modal to the document body or appDiv
-    document.body.appendChild(modal); // or appDiv.appendChild(modal);
+    document.body.appendChild(modal);
 }
-
 
 
 marked.setOptions({

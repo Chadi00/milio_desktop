@@ -29,15 +29,15 @@ function searchGoogle(query) {
         exec(command, (error, stdout, stderr) => {
             if (error) {
                 console.error(`Could not open the URL: ${error}`);
-                reject(new Error(`Could not open the URL: ${error}`)); // Reject the promise if an error occurs
+                reject(new Error(`Could not open the URL: ${error}`)); 
                 return;
             }
             if (stderr) {
                 console.error(`Error on opening URL: ${stderr}`);
-                reject(new Error(`Error on opening URL: ${stderr}`)); // Reject the promise if there is stderr output
+                reject(new Error(`Error on opening URL: ${stderr}`)); 
                 return;
             }
-            resolve('Opening search query on Google'); // Resolve successfully if the URL is opened without errors
+            resolve('Opening search query on Google'); 
         });
     });
 }

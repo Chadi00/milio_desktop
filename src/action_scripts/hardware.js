@@ -177,7 +177,7 @@ function volumeDown(input) {
 
 function putComputerToSleep() {
     return new Promise((resolve, reject) => {
-      // Determine the command based on the operating system
+
       let command;
       if (process.platform === 'win32') {
         command = 'rundll32.exe powrprof.dll,SetSuspendState 0,1,0';
@@ -190,7 +190,6 @@ function putComputerToSleep() {
         return resolve(false);
       }
   
-      // Execute the command to put the computer to sleep
       exec(command, (err) => {
         if (err) {
           console.error('Error executing sleep command:', err);

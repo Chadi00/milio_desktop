@@ -27,8 +27,8 @@ body, html {
 #chat-messages {
   flex-grow: 1;
   padding: 20px;
-  overflow-y: auto; /* Allows for scrolling within this element */
-  margin-bottom: 80px; /* Increased space for the new input design */
+  overflow-y: auto; 
+  margin-bottom: 80px; 
   color: #e0e0e0; 
 }
 
@@ -45,7 +45,6 @@ body, html {
   max-width: 80%;
 }
 
-/* Adjusting user message styles for a non-bubble look */
 .user-message .message-bubble {
   background-color: transparent; 
   color: #e0e0e0; 
@@ -53,7 +52,6 @@ body, html {
   border: none; 
 }
 
-/* Style for chatbot messages to distinguish them */
 .chatbot-message {
   justify-content: flex-start;
 }
@@ -172,11 +170,11 @@ body, html {
 
 
 #downloads-container {
-  background-color: #2a2a2a; /* Dark background */
-  border-radius: 20px; /* Rounded corners */
-  padding: 10px; /* Padding around content */
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.5); /* Subtle shadow */
-  max-height: 150px; /* Limit height */
-  overflow-y: auto; /* Enable vertical scrolling */
+  background-color: #2a2a2a; 
+  border-radius: 20px; 
+  padding: 10px; 
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.5); 
+  max-height: 150px;
+  overflow-y: auto; 
 }
 

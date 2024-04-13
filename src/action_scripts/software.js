@@ -217,7 +217,6 @@ function execPromise(command) {
 }
 
 function adjustAppNameForMacOS(appName) {
-    // Helper function to adjust app name's first letter case
     return [appName[0].toUpperCase() + appName.slice(1), appName[0].toLowerCase() + appName.slice(1)];
 }
 
@@ -238,12 +237,12 @@ async function openApplication(appName) {
 
     for (let command of commands) {
         if (await execPromise(command)) {
-            return true; // Successfully opened the application
+            return true;
         }
     }
 
     console.error(`Could not open the application: ${appName}`);
-    return false; // All attempts failed
+    return false; 
 }
 
 async function closeApplication(appName) {
@@ -263,20 +262,20 @@ async function closeApplication(appName) {
 
     for (let command of commands) {
         if (await execPromise(command)) {
-            return true; // Successfully closed the application
+            return true; 
         }
     }
 
     console.error(`Could not close the application: ${appName}`);
-    return false; // All attempts failed
+    return false; 
 }
 
 
 function openFile(fileName) {
     return new Promise((resolve, reject) => {
 
-        const desktopPath = path.join(require('os').homedir(), 'Desktop'); // Path to the user's Desktop
-        const filePath = path.join(desktopPath, fileName); // Full path to the file on the Desktop
+        const desktopPath = path.join(require('os').homedir(), 'Desktop'); 
+        const filePath = path.join(desktopPath, fileName); 
 
         const platform = process.platform;
         let command;
@@ -296,7 +295,7 @@ function openFile(fileName) {
         exec(command, (error, stdout, stderr) => {
             if (error) {
                 console.error(`Could not open the file: ${error}`);
-                resolve(false); // Resolve to false to indicate command failure, not function failure
+                resolve(false); 
                 return;
             }
             if (stderr) {
@@ -312,8 +311,8 @@ function openFile(fileName) {
 function createFile(fileName, content = '') {
     return new Promise(async (resolve, reject) => {
         
-        const desktopPath = path.join(require('os').homedir(), 'Desktop'); // Path to the user's Desktop
-        const filePath = path.join(desktopPath, fileName); // Full path to the file on the Desktop
+        const desktopPath = path.join(require('os').homedir(), 'Desktop'); 
+        const filePath = path.join(desktopPath, fileName); 
 
         try {
             await fs.writeFile(filePath, content);
@@ -321,7 +320,7 @@ function createFile(fileName, content = '') {
             resolve(true);
         } catch (error) {
             console.error(`Error creating the file: ${error}`);
-            reject(error); // Reject the promise to indicate function failure
+            reject(error); 
         }
     });
 }
@@ -330,14 +329,13 @@ function createFile(fileName, content = '') {
 
 function renameFile(formattedFileName) {
     return new Promise(async (resolve, reject) => {
-        // Split the formatted file name to extract the old name, extension, and new name
         const parts = formattedFileName.split('|');
         if (parts.length < 3) {
             return reject(new Error("Formatted file name does not contain enough parts."));
         }
         const oldFileName = parts[0];
         const extension = parts[1];
-        const newFileName = parts.slice(2).join('|'); // In case the new file name itself contains dashes
+        const newFileName = parts.slice(2).join('|');
 
         const correctedOldFileName = `${oldFileName}.${extension}`;
         const correctedNewFileName = `${newFileName}.${extension}`;
@@ -352,7 +350,7 @@ function renameFile(formattedFileName) {
             resolve(true);
         } catch (error) {
             console.error(`Error renaming the file: ${error}`);
-            reject(error); // Reject the promise to indicate function failure
+            reject(error);
         }
     });
 }
@@ -370,7 +368,7 @@ function deleteFile(fileName) {
             resolve(true);
         } catch (error) {
             console.error(`Error deleting the file: ${error}`);
-            resolve(false); // Resolve to false to indicate command failure, not function failure
+            resolve(false); 
         }
     });
 }
@@ -386,7 +384,7 @@ function createFolder(folderName) {
             resolve(true);
         } catch (error) {
             console.error(`Error creating the folder: ${error}`);
-            reject(error); // Reject the promise to indicate function failure
+            reject(error); 
         }
     });
 }
@@ -395,13 +393,12 @@ function createFolder(folderName) {
 
 function renameFolder(formattedFolderName) {
     return new Promise(async (resolve, reject) => {
-        // Split the formatted folder name to extract the current and new folder names
         const parts = formattedFolderName.split('|');
         if (parts.length < 2) {
             return reject(new Error("Formatted folder name does not contain enough parts."));
         }
         const currentFolderName = parts[0];
-        const newFolderName = parts.slice(1).join('|'); // In case the new folder name itself contains dashes
+        const newFolderName = parts.slice(1).join('|'); 
 
         const desktopPath = path.join(require('os').homedir(), 'Desktop'); // Path to the user's Desktop
         const currentFolderPath = path.join(desktopPath, currentFolderName); // Full path to the current folder on the Desktop
@@ -413,7 +410,7 @@ function renameFolder(formattedFolderName) {
             resolve(true);
         } catch (error) {
             console.error(`Error renaming the folder: ${error}`);
-            reject(error); // Reject the promise to indicate function failure
+            reject(error); 
         }
     });
 }
@@ -434,7 +431,7 @@ function deleteFolder(folderName) {
             if (error.code === 'ENOENT') {
                 reject(new Error(`Folder "${folderName}" does not exist.`)); // Specifically handle the case where the folder does not exist
             } else {
-                reject(error); // Reject with the original error for any other type of failure
+                reject(error); 
             }
         }
     });
@@ -486,10 +483,9 @@ end tell
             exec(`osascript -e '${script}'`, (error, stdout, stderr) => {
                 if (error || stderr) {
                     console.error(`Error playing the track: ${error || stderr}`);
-                    resolve(false); // Use resolve to return false in case of error
+                    resolve(false);
                     return;
                 }
-                // Check stdout for the script result
                 if (stdout.trim() === 'true') {
                     console.log(`Playing ${nameOfMusic} from ${nameOfPlaylist} on Apple Music.`);
                     resolve(true);
@@ -500,7 +496,7 @@ end tell
             });
         } else {
             console.error('Unsupported music app');
-            resolve(false); // Unsupported music app also results in false
+            resolve(false); 
         }
     });
 }
@@ -517,11 +513,11 @@ end tell
         exec(`osascript -e '${script}'`, (error, stdout, stderr) => {
             if (error || stderr) {
                 console.error(`Error pausing the music: ${error || stderr}`);
-                resolve(false); // Use resolve with false in case of error
+                resolve(false);
                 return;
             }
             console.log("Music playback paused.");
-            resolve(true); // Successfully paused the music
+            resolve(true); 
         });
     });
 }
@@ -556,7 +552,7 @@ function openURL(url) {
         exec(command, (error, stdout, stderr) => {
             if (error) {
                 console.error(`Could not open the URL: ${error}`);
-                resolve(false); // Resolve to false to indicate command failure, not function failure
+                resolve(false); 
                 return;
             }
             if (stderr) {
