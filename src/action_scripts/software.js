@@ -3,6 +3,7 @@ const fs = require('fs').promises;
 const path = require('path');
 const os = require('os');
 const screenshot = require('screenshot-desktop');
+const createTimerModal = require("../utils/timer");
 
 async function softwareScript(message) {
     if (message.length < 2) {
@@ -194,6 +195,11 @@ async function softwareScript(message) {
         case '16':
             console.log("Action 16: Read PDF");
             res = message.substring(2);
+            break;
+        case '17':
+            console.log("Action 17: Timer");
+            res = "Opened timer";
+            createTimerModal();
             break;
         default:
             console.log("Default case: No specific action found for this code.");
