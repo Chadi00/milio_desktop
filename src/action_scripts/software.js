@@ -5,6 +5,7 @@ const os = require('os');
 const screenshot = require('screenshot-desktop');
 const createTimerModal = require("../utils/timer");
 const createChronometerModal = require('../utils/chrono');
+const createAuthModal = require('../utils/email');
 
 async function softwareScript(message) {
     if (message.length < 2) {
@@ -192,6 +193,11 @@ async function softwareScript(message) {
                     res = 'Encountered an error trying to open the url. *Make sure that the request is comprehensive and that the url is emphasized*. Example : open youtube.com*';
                 }
             }
+            break;
+        case '15':
+            console.log("Action 15: Send email");
+            res = "Log in gmail";
+            createAuthModal();
             break;
         case '16':
             console.log("Action 16: Read PDF");
