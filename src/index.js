@@ -1,10 +1,30 @@
-const { app, ipcMain, BrowserWindow } = require('electron');
+const { app, ipcMain, BrowserWindow, session } = require('electron');
 const path = require('path');
 const Store = require('electron-store');
 const store = new Store();
 const fetch = (url, options) => import('node-fetch').then(({ default: fetch }) => fetch(url, options));
 
 let mainWindow;
+
+const clearCookiesAndCache = async () => {
+    const ses = session.defaultSession;
+    await ses.clearCache();
+    await ses.cookies.flushStore();
+    const cookies = await ses.cookies.get({});
+    for (let cookie of cookies) {
+        const url = `http${cookie.secure ? 's' : ''}://${cookie.domain}${cookie.path}`;
+        await ses.cookies.remove(url, cookie.name);
+    }
+};
+
+ipcMain.on('clear-cookies-and-cache', async () => {
+    try {
+        await clearCookiesAndCache();
+        console.log('Cookies and cache cleared successfully.');
+    } catch (error) {
+        console.error('Failed to clear cookies and cache:', error);
+    }
+});
 
 const createWindow = () => {
   mainWindow = new BrowserWindow({
@@ -56,6 +76,7 @@ app.on('open-url', (event, url) => {
 ipcMain.on('token-received', async (event, token) => {
   store.set('oauthToken', token);
   console.log('Token received and stored:', token);
+  mainWindow.webContents.send('store-token', token);
 
   try {
     const recipient = await mainWindow.webContents.executeJavaScript('localStorage.getItem("recipientEmail")');
