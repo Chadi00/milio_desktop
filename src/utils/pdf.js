@@ -16,9 +16,9 @@ async function extractTextFromPdf(pdfFile) {
                     const textContent = await page.getTextContent();
                     text += textContent.items.map(item => item.str).join(' ');
                 }
-                resolve(text); // Resolve the promise with the extracted text
+                resolve(text); 
             } catch (error) {
-                reject(error); // Reject the promise if there's an error
+                reject(error);
             }
         };
 

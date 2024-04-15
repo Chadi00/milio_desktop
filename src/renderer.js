@@ -7,9 +7,9 @@ const extractTextFromPdf = require("./utils/pdf");
 
 function initMainApp() {
     const appDiv = document.getElementById('app');
-    appDiv.innerHTML = ''; // Clear existing content
+    appDiv.innerHTML = ''; 
 
-    // Define main UI components
+    
     const chatContainer = document.createElement('div');
     chatContainer.id = 'chat-container';
 
@@ -68,7 +68,6 @@ function initMainApp() {
 
     appDiv.appendChild(chatContainer);
 
-    // Event listeners for sending messages
     userInput.addEventListener('keydown', function(event) {
         if (event.key === 'Enter') {
             event.preventDefault();
@@ -85,8 +84,8 @@ previousInteraction = "";
 function downloadPDF() {
     const fileInput = document.createElement('input');
     fileInput.type = 'file';
-    fileInput.accept = '.pdf'; // Only accept PDF files
-    fileInput.style.display = 'none'; // Hide the input element
+    fileInput.accept = '.pdf'; 
+    fileInput.style.display = 'none'; 
     document.body.appendChild(fileInput);
 
     fileInput.onchange = function(event) {
@@ -94,11 +93,11 @@ function downloadPDF() {
             for (const file of event.target.files) {
                 displayPDFInfo(file);
             }
-            fileInput.remove(); // Remove the input element after selection
+            fileInput.remove();
         }
     };
 
-    fileInput.click(); // Open the file dialog
+    fileInput.click(); 
 }
 
 function displayPDFInfo(file) {
@@ -127,13 +126,12 @@ function displayPDFInfo(file) {
     deleteBtn.style.background = 'transparent';
     deleteBtn.style.cursor = 'pointer';
     deleteBtn.onclick = function() {
-        pdfItem.remove(); // Remove the PDF item from the display
+        pdfItem.remove(); 
         const index = downloadedFiles.findIndex(f => f.file === file);
         if (index > -1) {
-            downloadedFiles.splice(index, 1); // Remove from the memory
+            downloadedFiles.splice(index, 1);
         }
 
-        // Check if there are no more PDFs displayed, and hide the container if empty
         if (downloadsContainer.children.length === 0) {
             downloadsContainer.style.display = 'none';
         }
@@ -144,7 +142,6 @@ function displayPDFInfo(file) {
     pdfItem.appendChild(deleteBtn);
     downloadsContainer.appendChild(pdfItem);
 
-    // Save the file reference in memory for future use
     downloadedFiles.push({ file: file, element: pdfItem });
 }
 
@@ -156,17 +153,14 @@ const sendMessage = async () => {
     const sendIcon = document.querySelector('.send-icon');
     let userInput = userInputField.value.trim();
 
-    // Return early if there's no input or if we're already waiting for a response
     if (!userInput || sendIcon.classList.contains('loading')) return;
 
-    // Indicate loading state
     sendIcon.classList.add('loading');
     
     sendIcon.classList.remove('fas', 'fa-arrow-up'); 
     sendIcon.classList.add('fas', 'fa-circle-notch'); 
     sendIcon.classList.add('fa-spin'); 
 
-    // Display user message immediately and clear input
     displayMessage(userInput, true);
     userInputField.value = '';
 
@@ -187,9 +181,8 @@ const sendMessage = async () => {
         userInput = `${pdfContent}User request: ${userInput}`;
     }
 
-    previousUserMessage = userInput; // Save user input to use it in next message (to keep context)
+    previousUserMessage = userInput; 
 
-    // Retrieve the stored JWT token
     const storedToken = localStorage.getItem('jwtToken');
 
     try {
@@ -211,11 +204,9 @@ const sendMessage = async () => {
     } catch (error) {
         console.error('Error:', error);
     } finally {
-        // End loading state and allow sending messages again
         sendIcon.classList.remove('loading', 'fa-spin', 'fa-circle-notch');
         sendIcon.classList.add('fas', 'fa-arrow-up');
         
-        // Clear the downloadedFiles array and the contents of the downloadsContainer
         downloadedFiles = [];
         clearDownloadsContainer();
     }
@@ -342,7 +333,6 @@ function showSettingsModal() {
         }
     });
 
-    // Create the modal content box
     const modalContent = document.createElement('div');
     modalContent.style.background = 'white';
     modalContent.style.padding = '20px';
@@ -351,7 +341,6 @@ function showSettingsModal() {
     modalContent.style.maxWidth = '400px';
     modalContent.style.width = '80%';
 
-    // Prevent clicks inside the modal content from closing the modal
     modalContent.addEventListener('click', function(event) {
         event.stopPropagation();
     });

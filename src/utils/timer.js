@@ -3,7 +3,7 @@ let timeLeft = 0;
 let isPaused = false;
 let isRunning = false;
 
-// Initialize the audio element with the correct path
+
 const audio = new Audio('./media/timerUp.mp3');
 
 function createTimerModal() {
@@ -85,8 +85,8 @@ function toggleTimer() {
 function startTimer(minutes, seconds) {
     timeLeft = minutes * 60 + seconds;
     if (timeLeft <= 0) return;
-    document.getElementById('minuteInput').style.display = 'none'; // Hide the minute input
-    document.getElementById('secondInput').style.display = 'none'; // Hide the second input
+    document.getElementById('minuteInput').style.display = 'none'; 
+    document.getElementById('secondInput').style.display = 'none'; 
     timerId = setInterval(updateTimer, 1000);
     isRunning = true;
     isPaused = false;
@@ -111,15 +111,15 @@ function resetTimer() {
     isRunning = false;
     isPaused = false;
     document.getElementById('timerDisplay').textContent = '00:00';
-    document.getElementById('minuteInput').style.display = 'block'; // Show the minute input again
-    document.getElementById('secondInput').style.display = 'block'; // Show the second input again
+    document.getElementById('minuteInput').style.display = 'block'; 
+    document.getElementById('secondInput').style.display = 'block'; 
     document.getElementById('toggleButton').textContent = 'Start';
 }
 
 function updateTimer() {
     if (timeLeft <= 0) {
         clearInterval(timerId);
-        audio.play(); // Start playing the notification sound immediately
+        audio.play(); 
         setTimeout(function() {
             alert('Time is up!');
             resetTimer();
@@ -142,7 +142,7 @@ function pad(num) {
 
 document.addEventListener('DOMContentLoaded', function() {
     const modal = createTimerModal();
-    modal.style.display = 'none'; // Hide modal initially
+    modal.style.display = 'none'; 
 });
 
 module.exports = createTimerModal;

@@ -145,11 +145,11 @@ async function deleteAccount() {
         return;
     }
 
-    console.log('Sending token:', storedToken); // For debugging purposes
+    console.log('Sending token:', storedToken);
 
     const confirmation = confirm('Are you sure you want to delete your account? This cannot be undone.');
     if (!confirmation) {
-        return; // User cancelled the operation
+        return; 
     }
 
     try {
@@ -162,9 +162,8 @@ async function deleteAccount() {
 
         if (!response.ok) {
             if(response.status === 401) {
-                // Handle unauthorized error specifically
                 alert('Session expired. Please log in again.');
-                localStorage.removeItem('jwtToken'); // Consider logging the user out
+                localStorage.removeItem('jwtToken'); 
                 displaySignupForm();
                 return;
             }
@@ -172,8 +171,8 @@ async function deleteAccount() {
         }
 
         alert('Account successfully deleted.');
-        localStorage.removeItem('jwtToken'); // Clear the JWT token
-        displaySignupForm(); // Redirect user to login page
+        localStorage.removeItem('jwtToken'); 
+        displaySignupForm();
     } catch (error) {
         console.error('Error deleting account:', error);
         alert('Failed to delete account. Please try again.');

@@ -5,7 +5,7 @@ const os = require('os');
 const screenshot = require('screenshot-desktop');
 const createTimerModal = require("../utils/timer");
 const createChronometerModal = require('../utils/chrono');
-const createAuthModal = require('../utils/email');
+const {choiceModal} = require('../utils/email');
 
 async function softwareScript(message) {
     if (message.length < 2) {
@@ -196,8 +196,21 @@ async function softwareScript(message) {
             break;
         case '15':
             console.log("Action 15: Send email");
-            res = "Log in gmail";
-            createAuthModal();
+            const parts = message.substring(2).split('|');
+            let recipient = "";
+            let subject = "";
+            let content = "";
+            if (parts[0]){
+                recipient = parts[0];
+            }
+            if (parts[1]){
+                subject = parts[1];
+            }
+            if (parts[2]){
+                content = parts[2];
+            }
+            res = "Opening the email sender ... ";
+            choiceModal(recipient, subject, content);
             break;
         case '16':
             console.log("Action 16: Read PDF");
@@ -298,11 +311,11 @@ function openFile(fileName) {
         const platform = process.platform;
         let command;
 
-        if (platform === "win32") { // Windows
+        if (platform === "win32") { 
             command = `start "" "${filePath}"`;
-        } else if (platform === "darwin") { // macOS
+        } else if (platform === "darwin") { 
             command = `open "${filePath}"`;
-        } else if (platform === "linux") { // Linux
+        } else if (platform === "linux") { 
             command = `xdg-open "${filePath}"`;
         } else {
             console.error('Unsupported platform');
@@ -358,9 +371,9 @@ function renameFile(formattedFileName) {
         const correctedOldFileName = `${oldFileName}.${extension}`;
         const correctedNewFileName = `${newFileName}.${extension}`;
 
-        const desktopPath = path.join(require('os').homedir(), 'Desktop'); // Path to the user's Desktop
-        const currentFilePath = path.join(desktopPath, correctedOldFileName); // Full path to the current file on the Desktop
-        const newFilePath = path.join(desktopPath, correctedNewFileName); // Full path for the new file name on the Desktop
+        const desktopPath = path.join(require('os').homedir(), 'Desktop'); 
+        const currentFilePath = path.join(desktopPath, correctedOldFileName); 
+        const newFilePath = path.join(desktopPath, correctedNewFileName); 
 
         try {
             await fs.rename(currentFilePath, newFilePath);
@@ -377,8 +390,8 @@ function renameFile(formattedFileName) {
 function deleteFile(fileName) {
     return new Promise(async (resolve, reject) => {
        
-        const desktopPath = path.join(require('os').homedir(), 'Desktop'); // Path to the user's Desktop
-        const filePath = path.join(desktopPath, fileName); // Full path to the file on the Desktop
+        const desktopPath = path.join(require('os').homedir(), 'Desktop'); 
+        const filePath = path.join(desktopPath, fileName); 
 
         try {
             await fs.unlink(filePath);
@@ -393,8 +406,8 @@ function deleteFile(fileName) {
 
 function createFolder(folderName) {
     return new Promise(async (resolve, reject) => {
-        const desktopPath = path.join(require('os').homedir(), 'Desktop'); // Path to the user's Desktop
-        const folderPath = path.join(desktopPath, folderName); // Full path to the new folder on the Desktop
+        const desktopPath = path.join(require('os').homedir(), 'Desktop'); 
+        const folderPath = path.join(desktopPath, folderName); 
 
         try {
             await fs.mkdir(folderPath, { recursive: true });
@@ -418,9 +431,9 @@ function renameFolder(formattedFolderName) {
         const currentFolderName = parts[0];
         const newFolderName = parts.slice(1).join('|'); 
 
-        const desktopPath = path.join(require('os').homedir(), 'Desktop'); // Path to the user's Desktop
-        const currentFolderPath = path.join(desktopPath, currentFolderName); // Full path to the current folder on the Desktop
-        const newFolderPath = path.join(desktopPath, newFolderName); // Full path for the new folder name on the Desktop
+        const desktopPath = path.join(require('os').homedir(), 'Desktop'); 
+        const currentFolderPath = path.join(desktopPath, currentFolderName); 
+        const newFolderPath = path.join(desktopPath, newFolderName); 
 
         try {
             await fs.rename(currentFolderPath, newFolderPath);
@@ -437,8 +450,8 @@ function renameFolder(formattedFolderName) {
 
 function deleteFolder(folderName) {
     return new Promise(async (resolve, reject) => {
-        const desktopPath = path.join(require('os').homedir(), 'Desktop'); // Path to the user's Desktop
-        const folderPath = path.join(desktopPath, folderName); // Full path to the folder on the Desktop
+        const desktopPath = path.join(require('os').homedir(), 'Desktop'); 
+        const folderPath = path.join(desktopPath, folderName); 
 
         try {
             await fs.rm(folderPath, { recursive: true });
@@ -447,7 +460,7 @@ function deleteFolder(folderName) {
         } catch (error) {
             console.error(`Error deleting the folder: ${error}`);
             if (error.code === 'ENOENT') {
-                reject(new Error(`Folder "${folderName}" does not exist.`)); // Specifically handle the case where the folder does not exist
+                reject(new Error(`Folder "${folderName}" does not exist.`)); 
             } else {
                 reject(error); 
             }
@@ -457,13 +470,13 @@ function deleteFolder(folderName) {
 
 function takeScreenshotAndSave() {
     return new Promise((resolve, reject) => {
-        const desktopPath = path.join(os.homedir(), 'Desktop'); // Path to the user's Desktop
-        const fileName = `screenshot-${new Date().toISOString().replace(/[:.]/g, '-')}.png`; // Create a unique file name
-        const filePath = path.join(desktopPath, fileName); // Full path for the screenshot file
+        const desktopPath = path.join(os.homedir(), 'Desktop'); 
+        const fileName = `screenshot-${new Date().toISOString().replace(/[:.]/g, '-')}.png`; 
+        const filePath = path.join(desktopPath, fileName); 
 
         screenshot({ filename: filePath }).then(() => {
             console.log(`Screenshot saved: ${filePath}`);
-            resolve(filePath); // Resolve with the file path of the screenshot
+            resolve(filePath); 
         }).catch((error) => {
             console.error(`Could not take screenshot: ${error}`);
             reject(new Error(`Could not take screenshot: ${error}`));
@@ -555,11 +568,11 @@ function openURL(url) {
         const platform = process.platform;
         let command;
 
-        if (platform === "win32") { // Windows
+        if (platform === "win32") { 
             command = `start "" "${url}"`;
-        } else if (platform === "darwin") { // macOS
+        } else if (platform === "darwin") { 
             command = `open "${url}"`;
-        } else if (platform === "linux") { // Linux
+        } else if (platform === "linux") { 
             command = `xdg-open "${url}"`;
         } else {
             console.error('Unsupported platform');

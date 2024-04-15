@@ -96,7 +96,6 @@ async function hardwareScript(message) {
 function volumeUp(input) {
     return new Promise((resolve, reject) => {
         const isPercentage = input.startsWith('%');
-        // Correctly parse the volume change based on whether it's a percentage
         const volumeChange = isPercentage ? parseInt(input.slice(1), 10) : parseInt(input, 10);
 
         if (isNaN(volumeChange)) {
