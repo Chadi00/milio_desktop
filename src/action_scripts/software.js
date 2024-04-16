@@ -163,8 +163,7 @@ async function softwareScript(message) {
         case '12':
             console.log("Action 12: Play music on apple music on MacOS");
             try {
-                const playMusic = await playMusicInApp(message.substring(2));
-                res = playMusic ? '▶️🎵 Music Playing ' : 'Failed to play music on apple music.';
+                res = await playMusicInApp(message.substring(2));
             } catch (error) {
                 console.error(`Error: ${error}`);
                 res = 'Encountered an error trying to play music on apple music.';
@@ -489,7 +488,8 @@ function takeScreenshotAndSave() {
 
 function playMusicInApp(input) {
     return new Promise((resolve, reject) => {
-        let [nameOfMusic, nameOfPlaylist, musicApp] = input.split('-');
+        let [nameOfMusic, nameOfPlaylist] = input.split('|');
+        let musicApp = 'applemusic';
 
         // Preprocess the song name to remove "featuring" and anything that follows
         const featuringRegex = /\s+(feat\.|featuring)\s+.*/i;
@@ -500,37 +500,83 @@ function playMusicInApp(input) {
 tell application "Music"
     set thePlaylist to the first playlist whose name is "${nameOfPlaylist}"
     if not exists thePlaylist then
-        return false
+        return "Playlist not found"
     end if
     set theTracks to tracks of thePlaylist whose name contains "${nameOfMusic}"
     if theTracks is {} then
-        return false
+        return "Track not found"
     else
         play item 1 of theTracks
-        return true
+        return "Success"
     end if
 end tell
 `;
             exec(`osascript -e '${script}'`, (error, stdout, stderr) => {
                 if (error || stderr) {
                     console.error(`Error playing the track: ${error || stderr}`);
-                    resolve(false);
+                    resolve(`I'm not able to play this music. Make sure to specify the name of the track and the playlist you want to play on apple music.`);
                     return;
                 }
-                if (stdout.trim() === 'true') {
+                stdout = stdout.trim();
+                if (stdout === "Success") {
                     console.log(`Playing ${nameOfMusic} from ${nameOfPlaylist} on Apple Music.`);
-                    resolve(true);
+                    resolve(`🎵 Playing ${nameOfMusic} from ${nameOfPlaylist} on Apple Music.`);
                 } else {
-                    console.log(`Could not find ${nameOfMusic} in ${nameOfPlaylist} on Apple Music.`);
-                    resolve(false);
+                    console.log(stdout);
+                    resolve(stdout);
                 }
             });
         } else {
             console.error('Unsupported music app');
-            resolve(false); 
+            resolve('Unsupported music app, for now milio can only play music from apple music'); 
         }
     });
 }
+
+function playMusicByArtistAndTrack(input) {
+    return new Promise((resolve, reject) => {
+        let [nameOfMusic, nameOfArtist] = input.split('|');
+        let musicApp = 'applemusic';
+
+        // Preprocess the song name to remove "featuring" and anything that follows
+        const featuringRegex = /\s+(feat\.|featuring)\s+.*/i;
+        nameOfMusic = nameOfMusic.replace(featuringRegex, '');
+
+        if (musicApp.toLowerCase() === 'applemusic') {
+            const script = `
+tell application "Music"
+    set theTracks to (every track of playlist "Library" whose name contains "${nameOfMusic}" and artist contains "${nameOfArtist}")
+    if theTracks is {} then
+        return "Track not found"
+    else
+        play item 1 of theTracks
+        return "Success"
+    end if
+end tell
+`;
+            exec(`osascript -e '${script}'`, (error, stdout, stderr) => {
+                if (error || stderr) {
+                    console.error(`Error playing the track: ${error || stderr}`);
+                    resolve(`I'm not able to play this music. Make sure the track name and artist are correctly specified.`);
+                    return;
+                }
+                stdout = stdout.trim();
+                if (stdout === "Success") {
+                    console.log(`Playing ${nameOfMusic} by ${nameOfArtist} on Apple Music.`);
+                    resolve(`🎵 Playing ${nameOfMusic} by ${nameOfArtist} on Apple Music.`);
+                } else {
+                    console.log(stdout);
+                    resolve(stdout);
+                }
+            });
+        } else {
+            console.error('Unsupported music app');
+            resolve('Unsupported music app, currently only Apple Music is supported.'); 
+        }
+    });
+}
+
+
 
 
 
