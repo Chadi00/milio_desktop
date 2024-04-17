@@ -1,4 +1,4 @@
-const { app, ipcMain, BrowserWindow, session } = require('electron');
+const { app, ipcMain, BrowserWindow, session, dialog } = require('electron');
 const path = require('path');
 const Store = require('electron-store');
 const store = new Store();
@@ -26,9 +26,14 @@ ipcMain.on('clear-cookies-and-cache', async () => {
     }
 });
 
+ipcMain.handle('show-save-dialog', async (event, options) => {
+  const result = await dialog.showSaveDialog(mainWindow, options);
+  return result;
+});
+
 const createWindow = () => {
   mainWindow = new BrowserWindow({
-    width: 550,
+    width: 750,
     height: 772,
     resizable: true,
     webPreferences: {

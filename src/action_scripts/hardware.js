@@ -1,5 +1,6 @@
 const osascript = require('node-osascript');
 const { exec } = require('child_process');
+const {createWebcamModal} = require('../utils/webcamPlayer');
 
 async function hardwareScript(message) {
     if (message.length < 2) {
@@ -38,6 +39,34 @@ async function hardwareScript(message) {
                 } catch (error) {
                     console.error(`Error: ${error}`);
                     res = 'Encountered an error trying to decrease the volume. *Make sure you authorized milio to adjust the volume.*';
+                }
+            }
+            break;
+        case '03':
+            console.log("Action 03: take picture webcam");
+            if (message.substring(2) === '0') {
+                res = 'Sorry, I was not able to understand.';
+            } else {
+                try {
+                    createWebcamModal();
+                    res = "Opened webcam player";
+                } catch (error) {
+                    console.error(`Error: ${error}`);
+                    res = 'Encountered an error trying to open the webcam player';
+                }
+            }
+            break;
+        case '04':
+            console.log("Action 04: Record a video with webcam");
+            if (message.substring(2) === '0') {
+                res = 'Sorry, I was not able to understand.';
+            } else {
+                try {
+                    createWebcamModal();
+                    res = "Opened webcam player";
+                } catch (error) {
+                    console.error(`Error: ${error}`);
+                    res = 'Encountered an error trying to open the webcam player';
                 }
             }
             break;

@@ -297,7 +297,7 @@ const analyzeAndDisplayChatbotMessage = async (message) => {
                 displayMessage("Sorry, I'm not able to help you now.Try again later.");
                 break;
             default:
-                if (actionCode === '4' || actionCode === '5' || actionCode === '5' || actionCode === '7') {
+                if (actionCode === '4' || actionCode === '5' || actionCode === '6' || actionCode === '7') {
                     console.log("Action Direct answer : logic, creative, cs or discussion");
                     previousSystemMessage = message.substring(1);
                     previousInteraction = "Previous user message : " + previousUserMessage + ".\nPrevious System response : " + previousSystemMessage + ".\n";
