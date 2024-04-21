@@ -2,6 +2,7 @@
 
 ## Overview
 Milio Desktop is an Electron-based application that transforms your interaction with your computer through an AI-powered chat interface. Built primarily in JavaScript with HTML and CSS, this app leverages a sophisticated backend server to process user commands and perform a variety of tasks directly from your desktop.
+This desktop application is intended to work by calling this server : https://github.com/Chadi00/milio_server/
 
 ## Key Features
 **User Authentication**
